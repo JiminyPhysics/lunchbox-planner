@@ -248,7 +248,7 @@ body::before {
   background: #EEF9EE;
 }
 .cell-label {
-  position: absolute; bottom: 4px; left: 0; right: 0;
+  position: absolute; top: 8px; left: 0; right: 0;
   text-align: center;
   font-size: 0.58rem; font-weight: 900; letter-spacing: 0.5px;
   text-transform: uppercase; color: #AAA;
@@ -257,9 +257,10 @@ body::before {
 }
 .cell.filled .cell-label { color: var(--day-color, var(--coral)); }
 
-/* Row cells: label sits at bottom, content is centred in remaining space */
+/* Row cells: reserve space at top for label */
 .cell-row {
-  padding-bottom: 18px; /* reserve space for the absolute label */
+  padding-top: 22px;
+  padding-bottom: 8px;
 }
 .cell-emoji {
   font-size: clamp(1.6rem, 3.5vw, 2.4rem); line-height: 1;
@@ -291,7 +292,8 @@ body::before {
 .cell-main .cell-emoji { font-size: clamp(2.2rem, 4.5vw, 3rem); }
 .cell-main .cell-food-name { text-align: center; }
 .cell-main .cell-label {
-  position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+  top: 8px; bottom: auto;
+  left: 50%; transform: translateX(-50%);
   white-space: nowrap;
 }
 
