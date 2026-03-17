@@ -2,7 +2,7 @@
 
 A fun, interactive school lunchbox planner for kids — built as a single HTML file, no installs needed.
 
-**➡️ [Open the app](https://jimihyphysics.github.io/lunchbox-planner/lunchbox-planner.html)**
+**➡️ [Open the app](https://jiminyphysics.github.io/lunchbox-planner/lunchbox-planner.html)**
 
 ---
 
