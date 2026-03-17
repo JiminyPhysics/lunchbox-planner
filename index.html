@@ -248,14 +248,19 @@ body::before {
   background: #EEF9EE;
 }
 .cell-label {
-  /* Now an inline label beside the emoji, not absolute at bottom */
-  position: static;
-  font-size: 0.62rem; font-weight: 900; letter-spacing: 0.5px;
+  position: absolute; bottom: 4px; left: 0; right: 0;
+  text-align: center;
+  font-size: 0.58rem; font-weight: 900; letter-spacing: 0.5px;
   text-transform: uppercase; color: #AAA;
   pointer-events: none;
-  line-height: 1.2; text-align: left;
+  line-height: 1.2;
 }
 .cell.filled .cell-label { color: var(--day-color, var(--coral)); }
+
+/* Row cells: label sits at bottom, content is centred in remaining space */
+.cell-row {
+  padding-bottom: 18px; /* reserve space for the absolute label */
+}
 .cell-emoji {
   font-size: clamp(1.6rem, 3.5vw, 2.4rem); line-height: 1;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
@@ -319,24 +324,14 @@ body::before {
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  min-width: 0;       /* allow flex to shrink below content size */
-  overflow: hidden;   /* clip anything that still overflows */
-  pointer-events: none;
-}
-.cell-text .cell-label {
-  position: static;
-  transform: none;
-  font-size: 0.58rem;
-  white-space: nowrap;
+  min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
+  pointer-events: none;
 }
 .cell-text .cell-food-name {
   font-size: 0.68rem;
   text-align: left;
   line-height: 1.25;
-  /* wrap to 2 lines max, then ellipsis — much better than single-line cut-off */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -661,9 +656,9 @@ body::before {
                 <div class="cell-emoji" id="e-veggie" style="display:none"></div>
                 <div class="cell-plus" id="p-veggie">＋</div>
                 <div class="cell-text" style="display:none">
-                  <div class="cell-label">Veggie</div>
                   <div class="cell-food-name" id="n-veggie"></div>
                 </div>
+                <div class="cell-label">Veggie</div>
               </div>
 
               <!-- Fruit — middle right — side-by-side layout -->
@@ -671,9 +666,9 @@ body::before {
                 <div class="cell-emoji" id="e-fruit" style="display:none"></div>
                 <div class="cell-plus" id="p-fruit">＋</div>
                 <div class="cell-text" style="display:none">
-                  <div class="cell-label">Fruit</div>
                   <div class="cell-food-name" id="n-fruit"></div>
                 </div>
+                <div class="cell-label">Fruit</div>
               </div>
 
               <!-- Protein — bottom left — side-by-side layout -->
@@ -681,9 +676,9 @@ body::before {
                 <div class="cell-emoji" id="e-protein" style="display:none"></div>
                 <div class="cell-plus" id="p-protein">＋</div>
                 <div class="cell-text" style="display:none">
-                  <div class="cell-label">Protein</div>
                   <div class="cell-food-name" id="n-protein"></div>
                 </div>
+                <div class="cell-label">Protein</div>
               </div>
 
               <!-- Treat — bottom right — side-by-side layout -->
@@ -691,9 +686,9 @@ body::before {
                 <div class="cell-emoji" id="e-treat" style="display:none"></div>
                 <div class="cell-plus" id="p-treat">＋</div>
                 <div class="cell-text" style="display:none">
-                  <div class="cell-label">Treat</div>
                   <div class="cell-food-name" id="n-treat"></div>
                 </div>
+                <div class="cell-label">Treat</div>
               </div>
 
             </div>
@@ -822,7 +817,7 @@ const FOODS = {
     {emoji:"🍛",name:"Fried Rice",   ingredients:[{emoji:"🍚",name:"Rice (serves)",qty:1,unit:"serve"},{emoji:"🥚",name:"Eggs",qty:1,unit:""},{emoji:"🥕",name:"Mixed veg",qty:1,unit:"serve"}]},
     {emoji:"🧆",name:"Fritters",     ingredients:[{emoji:"🧆",name:"Fritters / patties",qty:2,unit:""}]},
   ]},
-  veggie: { items:[  // 9 → 3×3
+  veggie: { items:[  // 12 → 3×4
     {emoji:"🥕",name:"Carrots",          ingredients:[{emoji:"🥕",name:"Carrots",qty:2,unit:""}]},
     {emoji:"🥒",name:"Cucumber",         ingredients:[{emoji:"🥒",name:"Cucumber",qty:1,unit:""}]},
     {emoji:"🫑",name:"Capsicum",         ingredients:[{emoji:"🫑",name:"Capsicum strips",qty:4,unit:""}]},
@@ -831,6 +826,9 @@ const FOODS = {
     {emoji:"🍅",name:"Cherry Tomatoes",  ingredients:[{emoji:"🍅",name:"Cherry tomatoes",qty:6,unit:""}]},
     {emoji:"🥬",name:"Celery",           ingredients:[{emoji:"🥬",name:"Celery sticks",qty:2,unit:""}]},
     {emoji:"🫛",name:"Snap Peas",        ingredients:[{emoji:"🫛",name:"Snap peas",qty:1,unit:"handful"}]},
+    {emoji:"🫒",name:"Olives",           ingredients:[{emoji:"🫒",name:"Olives",qty:1,unit:"small tub"}]},
+    {emoji:"🥑",name:"Avocado",          ingredients:[{emoji:"🥑",name:"Avocado",qty:0.5,unit:""}]},
+    {emoji:"🌿",name:"Edamame",          ingredients:[{emoji:"🌿",name:"Edamame (frozen)",qty:1,unit:"handful"}]},
     {emoji:"🥗",name:"Mixed Veggies",    ingredients:[{emoji:"🥕",name:"Carrots",qty:1,unit:""},{emoji:"🥦",name:"Broccoli florets",qty:1,unit:"handful"},{emoji:"🫑",name:"Capsicum strips",qty:2,unit:""},{emoji:"🥒",name:"Cucumber",qty:0.5,unit:""}]},
   ]},
   fruit:{ items:[  // 12 → 3×4
@@ -844,7 +842,7 @@ const FOODS = {
     {emoji:"🥝",name:"Kiwi",             ingredients:[{emoji:"🥝",name:"Kiwi fruits",qty:1,unit:""}]},
     {emoji:"🍑",name:"Peach",            ingredients:[{emoji:"🍑",name:"Peaches",qty:1,unit:""}]},
     {emoji:"🍒",name:"Cherries",         ingredients:[{emoji:"🍒",name:"Cherries",qty:10,unit:""}]},
-    {emoji:"🍍",name:"Pineapple",        ingredients:[{emoji:"🍍",name:"Pineapple slices",qty:2,unit:""}]},
+    {emoji:"🫒",name:"Olives",           ingredients:[{emoji:"🫒",name:"Olives",qty:1,unit:"small tub"}]},
     {emoji:"🍱",name:"Mixed Fruit",      ingredients:[{emoji:"🍓",name:"Strawberries",qty:3,unit:""},{emoji:"🍇",name:"Grapes",qty:1,unit:"small bunch"},{emoji:"🍊",name:"Orange segments",qty:0.5,unit:""},{emoji:"🥝",name:"Kiwi",qty:0.5,unit:""}]},
   ]},
   protein:{ items:[  // 9 → 3×3
