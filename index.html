@@ -516,7 +516,28 @@ body::before {
 .sf-close { background: #F3F4F6; color: #888; }
 .sf-copy  { background: linear-gradient(135deg, #43E97B, #38F9D7); color: white; flex: 2; box-shadow: 0 4px 14px rgba(67,233,123,0.35); }
 
-/* ── TOAST ──────────────────────────────────────────── */
+.coffee-link {
+  text-align: center;
+  margin-top: 24px;
+  padding-bottom: 12px;
+}
+.coffee-link a {
+  display: inline-block;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  text-decoration: none;
+  background: #FFDD00;
+  border-radius: 999px;
+  padding: 10px 22px;
+  box-shadow: 0 4px 14px rgba(255,221,0,0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.coffee-link a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255,221,0,0.55);
+}
 .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: white; border-radius: 14px; padding: 12px 24px; font-weight: 800; font-size: 0.95rem; z-index: 9999; opacity: 0; pointer-events: none; transition: all 0.3s; white-space: nowrap; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
@@ -529,7 +550,9 @@ body::before {
   .logo-text h1 { font-size: 1.35rem; }
   .mascot-big { width: 70px; height: 70px; font-size: 2.2rem; }
   .lunchbox-wrap { padding: 12px; }
-  .cell-row { gap: 6px; padding: 6px 8px; }
+  /* Match days-col padding to lunchbox-wrap(12px top) and week-strip(12px bottom) on mobile */
+  .days-col { padding-top: 12px; padding-bottom: 12px; }
+  .cell-row { gap: 6px; padding: 20px 8px 6px; } /* keep top padding for label */
   .cell-text .cell-food-name { font-size: 0.62rem; }
 }
 </style>
@@ -716,6 +739,12 @@ body::before {
   <div class="bottom-btns">
     <button class="shop-trigger" onclick="openShop()">🛒 Shopping List</button>
     <button class="menu-trigger" onclick="openMenu()">📋 View Menu</button>
+  </div>
+
+  <div class="coffee-link">
+    <a href="https://buymeacoffee.com/JiminyPhysics" target="_blank" rel="noopener">
+      ☕ Buy me a coffee to help fuel new apps
+    </a>
   </div>
 
 </div><!-- /app -->
