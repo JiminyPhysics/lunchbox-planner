@@ -49,48 +49,54 @@ body::before {
 /* ── LAYOUT ─────────────────────────────────────────── */
 .app { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto; padding: 0 16px 80px; }
 
-/* ── HEADER ─────────────────────────────────────────── */
-.header { text-align: center; padding: 32px 0 20px; }
-.header-inner {
-  display: inline-flex; align-items: center; gap: 16px;
-  background: white; border-radius: 999px;
-  padding: 12px 32px 12px 16px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+/* ── TOP BAR (merged header + mascot) ──────────────── */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: white;
+  border-radius: var(--r-xl);
+  padding: 14px 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-card);
+  flex-shrink: 0;
+}
+
+/* Left side: logo pill */
+.top-bar-logo {
+  display: flex; align-items: center; gap: 12px;
 }
 .logo-monster {
-  width: 56px; height: 56px; background: var(--coral);
+  width: 52px; height: 52px; background: var(--coral);
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-size: 2rem; box-shadow: 0 4px 12px rgba(255,107,107,0.4);
-  animation: bob 2.4s ease-in-out infinite; flex-shrink: 0;
+  font-size: 1.8rem; box-shadow: 0 4px 12px rgba(255,107,107,0.4);
+  flex-shrink: 0;
+  /* static — no animation */
 }
 @keyframes bob {
   0%,100% { transform: translateY(0) rotate(-3deg); }
   50%      { transform: translateY(-6px) rotate(3deg); }
 }
-.logo-text h1 { font-family: 'Baloo 2', cursive; font-size: 1.7rem; font-weight: 900; color: var(--ink); line-height: 1; }
-.logo-text p  { font-size: 0.82rem; font-weight: 700; color: var(--muted); }
+.logo-text h1 { font-family: 'Baloo 2', cursive; font-size: 1.5rem; font-weight: 900; color: var(--ink); line-height: 1; }
+.logo-text p  { font-size: 0.78rem; font-weight: 700; color: var(--muted); }
 
-/* ── MASCOT STRIP ───────────────────────────────────── */
-.mascot-strip {
-  background: white; border-radius: var(--r-xl); padding: 20px 28px;
-  margin-bottom: 24px; display: flex; align-items: center; gap: 20px;
-  box-shadow: var(--shadow-card); overflow: hidden; position: relative;
-}
-.mascot-strip::before {
-  content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 200px;
-  background: linear-gradient(90deg, transparent, #FFF9F0);
+/* Right side: mascot */
+.top-bar-mascot {
+  display: flex; align-items: center; gap: 14px;
+  flex-shrink: 0;
 }
 .mascot-big {
-  flex-shrink: 0; width: 90px; height: 90px;
+  flex-shrink: 0; width: 72px; height: 72px;
   background: linear-gradient(135deg, var(--coral), #FF9F43);
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
-  font-size: 3rem; box-shadow: 0 8px 24px rgba(255,107,107,0.35);
-  animation: bob 2.4s ease-in-out infinite; z-index: 1;
+  font-size: 2.4rem; box-shadow: 0 6px 18px rgba(255,107,107,0.35);
+  animation: bob 2.4s ease-in-out infinite;
 }
-.mascot-speech { flex: 1; z-index: 1; }
-.mascot-day-label { font-family: 'Baloo 2', cursive; font-size: 1.4rem; font-weight: 800; color: var(--ink); line-height: 1.1; }
-.mascot-msg { font-size: 0.92rem; font-weight: 700; color: var(--muted); margin-top: 2px; min-height: 1.4em; transition: all 0.3s; }
-.mascot-progress { display: flex; gap: 7px; margin-top: 10px; align-items: center; }
+.mascot-speech { z-index: 1; }
+.mascot-day-label { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800; color: var(--ink); line-height: 1.1; }
+.mascot-msg { font-size: 0.85rem; font-weight: 700; color: var(--muted); margin-top: 2px; min-height: 1.2em; transition: all 0.3s; }
+.mascot-progress { display: flex; gap: 7px; margin-top: 8px; align-items: center; }
 .prog-dot {
   width: 12px; height: 12px; border-radius: 50%;
   background: #E5E7EB; border: 2px solid #D1D5DB;
@@ -98,12 +104,12 @@ body::before {
 }
 .prog-dot.filled { background: var(--grass); border-color: #2e7d32; transform: scale(1.3); }
 
-/* ── MAIN GRID ──────────────────────────────────────── */
-.main-grid {
+/* ── CONTENT AREA ───────────────────────────────────── */
+.content-area {
   display: grid;
   grid-template-columns: 108px 1fr;
   gap: 20px;
-  align-items: stretch; /* both columns same height */
+  align-items: stretch;
 }
 
 /* ── DAY COLUMN ─────────────────────────────────────── */
@@ -543,17 +549,112 @@ body::before {
 
 /* ── RESPONSIVE ─────────────────────────────────────── */
 @media (max-width: 600px) {
-  .main-grid { grid-template-columns: 72px 1fr; gap: 10px; }
-  .right-col { min-width: 0; overflow: hidden; }
-  .day-name { font-size: 0.68rem; }
+
+  /* Fill screen exactly — no scroll */
+  body { overflow: hidden; height: 100dvh; }
+
+  .app {
+    padding: 0 10px 6px;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Top bar — compact single row */
+  .top-bar {
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    border-radius: 14px;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .logo-monster { width: 32px; height: 32px; font-size: 1.2rem; }
+  .logo-text h1 { font-size: 1rem; }
+  .logo-text p  { display: none; }
+  .top-bar-logo { gap: 8px; }
+  .mascot-big { width: 38px; height: 38px; font-size: 1.3rem; }
+  .top-bar-mascot { gap: 8px; }
+  .mascot-day-label { font-size: 0.85rem; }
+  .mascot-msg { font-size: 0.68rem; margin-top: 1px; min-height: 1em; }
+  .mascot-progress { gap: 4px; margin-top: 4px; }
+  .prog-dot { width: 8px; height: 8px; }
+
+  /* Content area — flex column: days row on top, right-col below */
+  .content-area {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-height: 0;
+    align-items: stretch;
+  }
+
+  /* Days col — horizontal row across full width */
+  .days-col {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0;
+    gap: 5px;
+    flex-shrink: 0;
+  }
+  .day-entry {
+    flex: 1;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .day-btn { width: 100%; }
+  .day-btn-inner { padding: 7px 4px 6px; border-radius: 12px; }
+  .day-btn[data-day="mon"] .day-btn-inner { box-shadow: none; }
+  .day-btn[data-day="tue"] .day-btn-inner { box-shadow: none; }
+  .day-btn[data-day="wed"] .day-btn-inner { box-shadow: none; }
+  .day-btn[data-day="thu"] .day-btn-inner { box-shadow: none; }
+  .day-btn[data-day="fri"] .day-btn-inner { box-shadow: none; }
+  /* Active button: full opacity, slight scale — no translateX on horizontal layout */
+  .day-btn:hover  { transform: scale(1.04); }
+  .day-btn.active { transform: scale(1.06); opacity: 1; filter: saturate(1); }
+  .day-name { font-size: 0.6rem; }
+  .day-dots-row { gap: 2px; margin-top: 3px; justify-content: center; }
+  .day-dot { width: 6px; height: 6px; }
+
+  .right-col {
+    min-width: 0; overflow: hidden;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+
+  /* Lunchbox */
+  .lunchbox-wrap { padding: 8px; flex-shrink: 0; border-radius: 16px; }
+  .box-body { padding: 7px; border-radius: 12px; }
+  .lunchbox-inner {
+    height: 190px; gap: 5px; padding: 6px; border-radius: 8px;
+  }
+  .cell { border-radius: 7px; }
+  .cell-row { gap: 5px; padding: 16px 6px 5px; }
+  .cell-row .cell-emoji { font-size: 1.3rem; }
+  .cell-row .cell-plus  { font-size: 1.1rem; }
+  .cell-text .cell-food-name { font-size: 0.56rem; }
+  .cell-main .cell-emoji { font-size: 1.8rem; }
+  .cell-label { font-size: 0.48rem; top: 3px; }
+
+  /* Week strip */
+  .week-strip { padding: 8px 12px; flex-shrink: 0; border-radius: 14px; }
+  .week-strip-title { font-size: 0.78rem; margin-bottom: 5px; }
+  .strip-name  { font-size: 0.55rem; }
+  .strip-foods { font-size: 0.9rem; min-height: 22px; }
+
+  /* Buttons */
+  .bottom-btns { margin-top: 8px; gap: 8px; flex-shrink: 0; }
+  .shop-trigger, .menu-trigger {
+    padding: 10px 12px; font-size: 0.88rem; border-radius: 999px;
+  }
+
+  /* Coffee link */
+  .coffee-link { margin-top: 6px; padding-bottom: 2px; flex-shrink: 0; }
+  .coffee-link a { font-size: 0.75rem; padding: 7px 16px; }
+
+  /* Picker */
   .food-grid { grid-template-columns: repeat(3, 1fr); }
-  .logo-text h1 { font-size: 1.35rem; }
-  .mascot-big { width: 70px; height: 70px; font-size: 2.2rem; }
-  .lunchbox-wrap { padding: 12px; }
-  /* Match days-col padding to lunchbox-wrap(12px top) and week-strip(12px bottom) on mobile */
-  .days-col { padding-top: 12px; padding-bottom: 12px; }
-  .cell-row { gap: 6px; padding: 20px 8px 6px; } /* keep top padding for label */
-  .cell-text .cell-food-name { font-size: 0.62rem; }
 }
 </style>
 </head>
@@ -563,35 +664,35 @@ body::before {
 
 <div class="app">
 
-  <!-- HEADER -->
-  <div class="header">
-    <div class="header-inner">
+  <!-- COMBINED HEADER + MASCOT BAR -->
+  <div class="top-bar">
+    <!-- Left: logo -->
+    <div class="top-bar-logo">
       <div class="logo-monster" id="headerMonster">🤩</div>
       <div class="logo-text">
         <h1>My Lunchbox!</h1>
         <p>Plan your week of yummy lunches 🌟</p>
       </div>
     </div>
-  </div>
-
-  <!-- MASCOT -->
-  <div class="mascot-strip">
-    <div class="mascot-big" id="mascotFace">😋</div>
-    <div class="mascot-speech">
-      <div class="mascot-day-label" id="mascotDayLabel">Monday</div>
-      <div class="mascot-msg" id="mascotMsg">Tap a section to fill your lunchbox!</div>
-      <div class="mascot-progress" id="mascotProgress">
-        <div class="prog-dot" data-sec="main"></div>
-        <div class="prog-dot" data-sec="veggie"></div>
-        <div class="prog-dot" data-sec="fruit"></div>
-        <div class="prog-dot" data-sec="protein"></div>
-        <div class="prog-dot" data-sec="treat"></div>
+    <!-- Right: mascot -->
+    <div class="top-bar-mascot">
+      <div class="mascot-big" id="mascotFace">😋</div>
+      <div class="mascot-speech">
+        <div class="mascot-day-label" id="mascotDayLabel">Monday</div>
+        <div class="mascot-msg" id="mascotMsg">Tap a section to fill your lunchbox!</div>
+        <div class="mascot-progress" id="mascotProgress">
+          <div class="prog-dot" data-sec="main"></div>
+          <div class="prog-dot" data-sec="veggie"></div>
+          <div class="prog-dot" data-sec="fruit"></div>
+          <div class="prog-dot" data-sec="protein"></div>
+          <div class="prog-dot" data-sec="treat"></div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- MAIN GRID: days col + lunchbox+strip col -->
-  <div class="main-grid">
+  <!-- CONTENT AREA: days + right column -->
+  <div class="content-area">
 
     <!-- DAY COLUMN -->
     <div class="days-col">
@@ -734,7 +835,7 @@ body::before {
       </div>
 
     </div><!-- /right-col -->
-  </div><!-- /main-grid -->
+  </div><!-- /content-area -->
 
   <div class="bottom-btns">
     <button class="shop-trigger" onclick="openShop()">🛒 Shopping List</button>
