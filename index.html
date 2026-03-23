@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Lunchbox Planner 🍱</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;700;800;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -47,7 +49,7 @@ body::before {
 }
 
 /* ── LAYOUT ─────────────────────────────────────────── */
-.app { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto; padding: 0 16px 80px; }
+.app { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto; padding: 20px 16px 20px; }
 
 /* ── TOP BAR (merged header + mascot) ──────────────── */
 .top-bar {
@@ -78,7 +80,7 @@ body::before {
   0%,100% { transform: translateY(0) rotate(-3deg); }
   50%      { transform: translateY(-6px) rotate(3deg); }
 }
-.logo-text h1 { font-family: 'Baloo 2', cursive; font-size: 1.5rem; font-weight: 900; color: var(--ink); line-height: 1; }
+.logo-text h1 { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--ink); line-height: 1; }
 .logo-text p  { font-size: 0.78rem; font-weight: 700; color: var(--muted); }
 
 /* Right side: mascot */
@@ -93,9 +95,9 @@ body::before {
   font-size: 2.4rem; box-shadow: 0 6px 18px rgba(255,107,107,0.35);
   animation: bob 2.4s ease-in-out infinite;
 }
-.mascot-speech { z-index: 1; }
-.mascot-day-label { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800; color: var(--ink); line-height: 1.1; }
-.mascot-msg { font-size: 0.85rem; font-weight: 700; color: var(--muted); margin-top: 2px; min-height: 1.2em; transition: all 0.3s; }
+.mascot-speech { z-index: 1; width: 220px; }
+.mascot-day-label { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--ink); line-height: 1.1; }
+.mascot-msg { font-size: 0.85rem; font-weight: 700; color: var(--muted); margin-top: 2px; min-height: 2.4em; transition: all 0.3s; }
 .mascot-progress { display: flex; gap: 7px; margin-top: 8px; align-items: center; }
 .prog-dot {
   width: 12px; height: 12px; border-radius: 50%;
@@ -109,7 +111,7 @@ body::before {
   display: grid;
   grid-template-columns: 108px 1fr;
   gap: 20px;
-  align-items: stretch;
+  align-items: start;
 }
 
 /* ── DAY COLUMN ─────────────────────────────────────── */
@@ -117,15 +119,18 @@ body::before {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  /* Match the top padding of lunchbox-wrap (20px) and bottom padding of week-strip (16px) */
+  gap: 0;
   padding-top: 20px;
   padding-bottom: 16px;
+  overflow: hidden;
+  /* height set by JS to match lunchbox top → week-strip bottom */
 }
 
 .day-entry {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
+  justify-content: center;
 }
 
 .day-btn {
@@ -134,24 +139,18 @@ body::before {
   cursor: pointer;
   transition: opacity 0.2s, filter 0.2s;
   outline: none;
-  /* Inactive: slightly greyed out */
   opacity: 0.55;
   filter: saturate(0.5);
 }
-.day-btn:hover {
-  opacity: 0.8;
-  filter: saturate(0.8);
-}
-/* Active: full colour, no transform */
-.day-btn.active {
-  opacity: 1;
-  filter: saturate(1);
-}
+.day-btn:hover  { opacity: 0.8; filter: saturate(0.8); }
+.day-btn.active { opacity: 1; filter: saturate(1); }
 
 .day-btn-inner {
-  display: flex; flex-direction: column; align-items: center;
-  padding: 10px 8px 9px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 10px 8px;
   border-radius: 18px;
+  height: 75px;
 }
 .day-btn[data-day="mon"] .day-btn-inner { background: var(--mon-c); box-shadow: 0 5px 14px rgba(255,107,107,.4); }
 .day-btn[data-day="tue"] .day-btn-inner { background: var(--tue-c); box-shadow: 0 5px 14px rgba(255,159,67,.4); }
@@ -160,7 +159,7 @@ body::before {
 .day-btn[data-day="fri"] .day-btn-inner { background: var(--fri-c); box-shadow: 0 5px 14px rgba(255,64,129,.4); }
 
 .day-name {
-  font-family: 'Baloo 2', cursive; font-size: 0.83rem; font-weight: 800;
+  font-family: 'Baloo 2', system-ui, sans-serif; font-size: 0.83rem; font-weight: 800;
   color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.2); line-height: 1.1;
 }
 
@@ -193,7 +192,7 @@ body::before {
 
 /* Box scene: positioning context */
 .box-scene {
-  max-width: 540px; margin: 0 auto;
+  margin: 0 auto;
   position: relative;
 }
 
@@ -224,7 +223,7 @@ body::before {
   grid-template-rows: 1fr 1fr 0.85fr;
   gap: 7px;
   padding: 8px;
-  height: 260px; /* fixed height — never changes when food is added */
+  height: 380px;
   overflow: hidden;
 }
 
@@ -384,12 +383,12 @@ body::before {
 }
 .celebrate-overlay.show .celebrate-msg { transform: scale(1); pointer-events: all; }
 .celebrate-emoji { font-size: 3.5rem; line-height: 1; display: block; margin-bottom: 8px; }
-.celebrate-title { font-family: 'Baloo 2', cursive; font-size: 1.6rem; font-weight: 900; color: var(--ink); }
+.celebrate-title { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.6rem; font-weight: 900; color: var(--ink); }
 .celebrate-sub   { font-size: 0.9rem; font-weight: 700; color: var(--muted); margin-top: 4px; }
 .celebrate-close {
   border: none; border-radius: 14px;
   padding: 12px 24px; background: #F3F4F6;
-  color: #636e72; font-family: 'Baloo 2', cursive; font-size: 1.05rem; font-weight: 800;
+  color: #636e72; font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.05rem; font-weight: 800;
   cursor: pointer; transition: transform 0.15s;
 }
 .celebrate-close:hover { transform: scale(1.05); }
@@ -399,7 +398,7 @@ body::before {
 .celebrate-next {
   border: none; border-radius: 14px;
   padding: 12px 24px; background: var(--day-color, var(--coral));
-  color: white; font-family: 'Baloo 2', cursive; font-size: 1.05rem; font-weight: 800;
+  color: white; font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.05rem; font-weight: 800;
   cursor: pointer; transition: transform 0.15s;
   box-shadow: 0 4px 14px rgba(0,0,0,0.15);
 }
@@ -407,7 +406,7 @@ body::before {
 
 /* ── WEEK STRIP ─────────────────────────────────────── */
 .week-strip { background: white; border-radius: var(--r-xl); padding: 16px 20px; box-shadow: var(--shadow-card); }
-.week-strip-title { font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: var(--ink); margin-bottom: 10px; }
+.week-strip-title { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 0.95rem; font-weight: 800; color: var(--ink); margin-bottom: 10px; }
 .strip-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
 .strip-day { text-align: center; }
 .strip-name { font-size: 0.65rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: #BBB; margin-bottom: 4px; }
@@ -416,18 +415,18 @@ body::before {
 
 /* ── BOTTOM BUTTONS ─────────────────────────────────── */
 .bottom-btns {
-  display: flex; gap: 12px; margin-top: 18px;
+  display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap;
 }
-.shop-trigger, .menu-trigger {
+.shop-trigger, .menu-trigger, .manage-trigger {
   border: none; border-radius: 999px;
-  padding: 18px 20px; font-family: 'Baloo 2', cursive; font-size: 1.1rem; font-weight: 800;
+  padding: 14px 16px; font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1rem; font-weight: 800;
   cursor: pointer; flex: 1;
   transition: all 0.2s; position: relative; overflow: hidden;
 }
 .shop-trigger {
   background: linear-gradient(135deg, #43E97B 0%, #38F9D7 100%);
   color: white; box-shadow: 0 8px 24px rgba(67,233,123,0.4);
-  margin-top: 0; /* override old margin */
+  margin-top: 0;
 }
 .shop-trigger:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(67,233,123,0.5); }
 .menu-trigger {
@@ -435,6 +434,27 @@ body::before {
   color: white; box-shadow: 0 8px 24px rgba(108,92,231,0.35);
 }
 .menu-trigger:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(108,92,231,0.5); }
+.manage-trigger {
+  background: linear-gradient(135deg, #636e72, #2d3436);
+  color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+.manage-trigger:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
+
+/* ── MANAGE FOODS ────────────────────────────────────── */
+.manage-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+.manage-food-btn {
+  display: flex; align-items: center; gap: 6px;
+  border: 2px solid #E5E7EB; border-radius: 999px;
+  padding: 6px 14px; background: white;
+  font-family: 'Nunito', system-ui, sans-serif; font-size: 0.85rem; font-weight: 800;
+  cursor: pointer; transition: all 0.15s; color: #333;
+}
+.manage-food-btn:hover { border-color: #aaa; }
+.manage-food-btn.disabled {
+  background: #F3F4F6; color: #BBB;
+  border-color: #E5E7EB; text-decoration: line-through;
+}
+.manage-food-btn .mf-emoji { font-size: 1.1rem; }
 
 /* ── OVERLAY ────────────────────────────────────────── */
 .overlay {
@@ -458,7 +478,7 @@ body::before {
   display: flex; align-items: center; gap: 12px; flex-shrink: 0;
 }
 .picker-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; flex-shrink: 0; }
-.picker-titles h2 { font-family: 'Baloo 2', cursive; font-size: 1.3rem; font-weight: 800; color: var(--ink); }
+.picker-titles h2 { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--ink); }
 .picker-titles p  { font-size: 0.82rem; font-weight: 700; color: var(--muted); }
 .picker-scroll { overflow-y: auto; padding: 16px; flex: 1; }
 .food-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -476,7 +496,7 @@ body::before {
   padding: 14px 22px 20px; border-top: 1.5px solid #F0F0F0;
   display: flex; gap: 10px; flex-shrink: 0;
 }
-.pf-btn { border: none; border-radius: 14px; padding: 13px 0; font-family: 'Baloo 2', cursive; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: all 0.15s; flex: 1; }
+.pf-btn { border: none; border-radius: 14px; padding: 13px 0; font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: all 0.15s; flex: 1; }
 .pf-btn:hover { transform: translateY(-2px); }
 .pf-cancel { background: #F3F4F6; color: #888; }
 .pf-clear  { background: #FEE2E2; color: #DC2626; }
@@ -491,21 +511,21 @@ body::before {
 }
 .overlay.open .shop-modal { transform: scale(1) translateY(0); }
 .shop-header { padding: 24px 24px 16px; background: linear-gradient(135deg, #43E97B, #38F9D7); border-radius: 28px 28px 0 0; color: white; }
-.shop-header h2 { font-family: 'Baloo 2', cursive; font-size: 1.6rem; font-weight: 900; }
+.shop-header h2 { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.6rem; font-weight: 900; }
 .shop-header p  { font-size: 0.88rem; font-weight: 700; opacity: 0.85; }
 .shop-body { overflow-y: auto; padding: 20px; flex: 1; }
 .shop-sec-title { display: flex; align-items: center; gap: 8px; margin: 14px 0 8px; }
-.shop-sec-pill { font-family: 'Baloo 2', cursive; font-size: 0.82rem; font-weight: 800; color: white; border-radius: 999px; padding: 3px 12px; }
+.shop-sec-pill { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 0.82rem; font-weight: 800; color: white; border-radius: 999px; padding: 3px 12px; }
 .shop-items { display: flex; flex-direction: column; gap: 6px; }
 .shop-item { display: flex; align-items: center; gap: 10px; background: #F9FAFB; border-radius: 12px; padding: 10px 14px; border: 1.5px solid #F0F0F0; }
 .si-emoji { font-size: 1.5rem; flex-shrink: 0; }
 .si-name  { flex: 1; font-size: 0.92rem; font-weight: 700; color: var(--ink); }
-.si-qty   { font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: white; border-radius: 999px; padding: 2px 10px; min-width: 44px; text-align: center; }
+.si-qty   { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 0.95rem; font-weight: 800; color: white; border-radius: 999px; padding: 2px 10px; min-width: 44px; text-align: center; }
 .shop-fold-note { background: #FFFBEB; border: 1.5px solid #FCD34D; border-radius: 12px; padding: 10px 14px; font-size: 0.83rem; font-weight: 700; color: #92400E; margin-bottom: 4px; }
 
 /* Menu modal specific */
 .menu-day-header {
-  font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 900;
+  font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1rem; font-weight: 900;
   color: white; border-radius: 10px; padding: 5px 14px;
   margin: 14px 0 7px; display: inline-block;
 }
@@ -517,7 +537,7 @@ body::before {
 .shop-textarea { display: block; width: 100%; margin-top: 16px; border: 2px solid #E5E7EB; border-radius: 14px; padding: 14px; font-family: 'Nunito', sans-serif; font-size: 0.85rem; line-height: 1.7; color: var(--ink); background: #FAFAFA; resize: none; outline: none; }
 .shop-textarea:focus { border-color: #43E97B; }
 .shop-footer { padding: 14px 20px 20px; border-top: 1.5px solid #F0F0F0; display: flex; gap: 10px; flex-shrink: 0; }
-.sf-btn { border: none; border-radius: 14px; padding: 13px 0; font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s; flex: 1; }
+.sf-btn { border: none; border-radius: 14px; padding: 13px 0; font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s; flex: 1; }
 .sf-btn:hover { transform: translateY(-2px); }
 .sf-close { background: #F3F4F6; color: #888; }
 .sf-copy  { background: linear-gradient(135deg, #43E97B, #38F9D7); color: white; flex: 2; box-shadow: 0 4px 14px rgba(67,233,123,0.35); }
@@ -575,14 +595,13 @@ body::before {
     flex: 1;
     max-height: 76px;
   }
-  .logo-monster { width: 32px; height: 32px; font-size: 1.2rem; }
-  .logo-text h1 { font-size: 1rem; }
+  .logo-text h1 { font-size: 1.2rem; }
   .logo-text p  { display: none; }
   .top-bar-logo { gap: 8px; }
   .mascot-big { width: 38px; height: 38px; font-size: 1.3rem; }
   .top-bar-mascot { gap: 8px; }
-  .mascot-day-label { font-size: 0.85rem; }
-  .mascot-msg { font-size: 0.68rem; margin-top: 1px; min-height: 1em; }
+  .mascot-day-label { font-size: 1rem; }
+  .mascot-msg { font-size: 0.82rem; margin-top: 1px; min-height: 1em; }
   .mascot-progress { gap: 4px; margin-top: 4px; }
   .prog-dot { width: 8px; height: 8px; }
 
@@ -599,9 +618,9 @@ body::before {
   .day-entry { flex: 1; flex-direction: column; align-items: stretch; }
   .day-btn { width: 100%; }
   .day-btn-inner {
-    padding: 10px 4px 8px;  /* taller = more square */
+    padding: 10px 4px 8px;
     border-radius: 14px;
-    aspect-ratio: 1;         /* force square */
+    aspect-ratio: 1;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     box-shadow: none;
@@ -613,21 +632,21 @@ body::before {
   .day-btn[data-day="fri"] .day-btn-inner { box-shadow: none; }
   .day-btn:hover  { transform: scale(1.04); }
   .day-btn.active { transform: scale(1.06); opacity: 1; filter: saturate(1); }
-  .day-name { font-size: 0.65rem; }
+  .day-name { font-size: 0.78rem; }
   .day-dots-row { gap: 2px; margin-top: 4px; justify-content: center; }
   .day-dot { width: 6px; height: 6px; }
 
   /* Week strip */
-  .week-strip-title { font-size: 0.78rem; margin-bottom: 5px; }
-  .strip-name  { font-size: 0.55rem; }
-  .strip-foods { font-size: 0.9rem; min-height: 22px; }
+  .week-strip-title { font-size: 0.9rem; margin-bottom: 5px; }
+  .strip-name  { font-size: 0.7rem; }
+  .strip-foods { font-size: 1rem; min-height: 22px; }
 
   /* Lunchbox — square using vw units */
   .lunchbox-wrap {
     padding: 8px; border-radius: 16px;
     flex-shrink: 0;
     width: 100%;
-    height: calc(100vw - 20px); /* square: same as width */
+    height: calc(100vw - 20px);
   }
   .box-scene { height: 100%; display: flex; flex-direction: column; }
   .box-body {
@@ -640,12 +659,12 @@ body::before {
     gap: 5px; padding: 6px; border-radius: 8px;
   }
   .cell { border-radius: 7px; }
-  .cell-row { gap: 5px; padding: 16px 6px 5px; }
-  .cell-row .cell-emoji { font-size: 1.3rem; }
-  .cell-row .cell-plus  { font-size: 1.1rem; }
-  .cell-text .cell-food-name { font-size: 0.56rem; }
-  .cell-main .cell-emoji { font-size: 1.8rem; }
-  .cell-label { font-size: 0.48rem; top: 3px; }
+  .cell-row { gap: 5px; padding: 18px 8px 6px; }
+  .cell-row .cell-emoji { font-size: 1.5rem; }
+  .cell-row .cell-plus  { font-size: 1.3rem; }
+  .cell-text .cell-food-name { font-size: 0.75rem; }
+  .cell-main .cell-emoji { font-size: 2rem; }
+  .cell-label { font-size: 0.6rem; top: 4px; }
 
   /* Week strip */
   .week-strip { padding: 8px 12px; flex-shrink: 0; border-radius: 14px; }
@@ -702,15 +721,14 @@ body::before {
 
   <!-- COMBINED HEADER + MASCOT BAR -->
   <div class="top-bar">
-    <!-- Left: logo -->
+    <!-- Left: title text only -->
     <div class="top-bar-logo">
-      <div class="logo-monster" id="headerMonster">🤩</div>
       <div class="logo-text">
         <h1>My Lunchbox!</h1>
         <p>Plan your week of yummy lunches 🌟</p>
       </div>
     </div>
-    <!-- Right: mascot -->
+    <!-- Right: mascot with fixed-size face -->
     <div class="top-bar-mascot">
       <div class="mascot-big" id="mascotFace">😋</div>
       <div class="mascot-speech">
@@ -873,6 +891,7 @@ body::before {
       <div class="bottom-btns">
         <button class="shop-trigger" onclick="openShop()">🛒 Shopping List</button>
         <button class="menu-trigger" onclick="openMenu()">📋 View Menu</button>
+        <button class="manage-trigger" onclick="openManage()">⚙️ Manage Foods</button>
       </div>
 
       <div class="coffee-link">
@@ -913,6 +932,21 @@ body::before {
     <div class="shop-footer">
       <button class="sf-btn sf-close" onclick="closeMenu()">Close</button>
       <button class="sf-btn sf-copy" style="background: linear-gradient(135deg, #A29BFE, #6C5CE7); box-shadow: 0 4px 14px rgba(108,92,231,0.35);" onclick="copyMenu()">📋 Copy to Clipboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE FOODS -->
+<div class="overlay" id="manageOverlay" onclick="handleManageBg(event)">
+  <div class="shop-modal">
+    <div class="shop-header" style="background: linear-gradient(135deg, #636e72, #2d3436);">
+      <h2>⚙️ Manage Foods</h2>
+      <p>Tap any food to hide or show it in the picker</p>
+    </div>
+    <div class="shop-body" id="manageBody"></div>
+    <div class="shop-footer">
+      <button class="sf-btn sf-close" onclick="closeManage()">Done</button>
+      <button class="sf-btn" style="background:#f0f0f0;color:#636e72;" onclick="resetDisabled()">Reset all</button>
     </div>
   </div>
 </div>
@@ -1011,7 +1045,7 @@ const FOODS = {
     {emoji:"🍑",name:"Peach",            ingredients:[{emoji:"🍑",name:"Peaches",qty:1,unit:""}]},
     {emoji:"🍒",name:"Cherries",         ingredients:[{emoji:"🍒",name:"Cherries",qty:10,unit:""}]},
     {emoji:"🫒",name:"Olives",           ingredients:[{emoji:"🫒",name:"Olives",qty:1,unit:"small tub"}]},
-    {emoji:"🍱",name:"Mixed Fruit",      ingredients:[{emoji:"🍓",name:"Strawberries",qty:3,unit:""},{emoji:"🍇",name:"Grapes",qty:1,unit:"small bunch"},{emoji:"🍊",name:"Orange segments",qty:0.5,unit:""},{emoji:"🥝",name:"Kiwi",qty:0.5,unit:""}]},
+    {emoji:"🍓🍇",name:"Mixed Fruit",      ingredients:[{emoji:"🍓",name:"Strawberries",qty:3,unit:""},{emoji:"🍇",name:"Grapes",qty:1,unit:"small bunch"},{emoji:"🍊",name:"Orange segments",qty:0.5,unit:""},{emoji:"🥝",name:"Kiwi",qty:0.5,unit:""}]},
   ]},
   protein:{ items:[  // 9 → 3×3
     {emoji:"🧀",name:"Cheese",           ingredients:[{emoji:"🧀",name:"Cheese slices",qty:2,unit:""}]},
@@ -1119,7 +1153,6 @@ function refreshBox() {
 function refreshMascot() {
   const count = ALL_SECS.filter(s => meals[curDay][s]).length;
   document.getElementById("mascotFace").textContent = MASCOT_FACES[count] || "😋";
-  document.getElementById("headerMonster").textContent = count === 5 ? "🥳" : "🤩";
   let msg = MASCOT_MSGS[count];
   if (Array.isArray(msg)) msg = msg[Math.floor(Math.random() * msg.length)];
   document.getElementById("mascotMsg").textContent = msg || "";
@@ -1165,14 +1198,13 @@ function openPicker(sec) {
 
 function renderFoodGrid(items, selectedName) {
   const grid = document.getElementById("foodGrid"); grid.innerHTML = "";
-  items.forEach(item => {
+  items.filter(item => isEnabled(item.name)).forEach(item => {
     const card = document.createElement("div");
     card.className = "food-card" + (selectedName === item.name ? " selected" : "");
     card.innerHTML = `<span class="fc-emoji">${item.emoji}</span><div class="fc-name">${item.name}</div>`;
     card.onclick = () => handleCardClick(item);
     grid.appendChild(card);
   });
-  // Show back button only when in filling sub-picker
   document.getElementById("pickerBackBtn").style.display = pendingBase ? "block" : "none";
   document.getElementById("pickerCancelBtn").style.display = pendingBase ? "none" : "block";
 }
@@ -1467,9 +1499,75 @@ function copyMenu() {
   });
 }
 
+// ── DISABLED FOODS ────────────────────────────────────────────────────────
+let disabledFoods = new Set(JSON.parse(localStorage.getItem("disabledFoods") || "[]"));
+
+function saveDisabled() {
+  localStorage.setItem("disabledFoods", JSON.stringify([...disabledFoods]));
+}
+
+function isEnabled(name) { return !disabledFoods.has(name); }
+
+function toggleFood(name) {
+  if (disabledFoods.has(name)) disabledFoods.delete(name);
+  else disabledFoods.add(name);
+  saveDisabled();
+  document.querySelectorAll('.manage-food-btn').forEach(btn => {
+    if (btn.dataset.name === name) btn.classList.toggle('disabled', !isEnabled(name));
+  });
+}
+
+function resetDisabled() {
+  disabledFoods.clear();
+  saveDisabled();
+  document.querySelectorAll('.manage-food-btn').forEach(btn => btn.classList.remove('disabled'));
+}
+
+function openManage() {
+  const body = document.getElementById('manageBody');
+  body.innerHTML = '';
+  const secOrder  = ['main','veggie','fruit','protein','treat'];
+  const secLabels = {main:'Main Meal', veggie:'Veggies', fruit:'Fruit', protein:'Protein', treat:'Treats'};
+  secOrder.forEach(sec => {
+    const hdr = document.createElement('div'); hdr.className = 'shop-sec-title';
+    const pill = document.createElement('div'); pill.className = 'shop-sec-pill';
+    pill.style.background = SEC_COLORS[sec];
+    pill.textContent = `${SEC_META[sec].icon} ${secLabels[sec]}`;
+    hdr.appendChild(pill); body.appendChild(hdr);
+    const grid = document.createElement('div'); grid.className = 'manage-grid';
+    FOODS[sec].items.forEach(food => {
+      const btn = document.createElement('button');
+      btn.className = 'manage-food-btn' + (isEnabled(food.name) ? '' : ' disabled');
+      btn.dataset.name = food.name;
+      btn.innerHTML = `<span class="mf-emoji">${food.emoji}</span>${food.name}`;
+      btn.onclick = () => toggleFood(food.name);
+      grid.appendChild(btn);
+    });
+    body.appendChild(grid);
+  });
+  document.getElementById('manageOverlay').classList.add('open');
+}
+function closeManage() { document.getElementById('manageOverlay').classList.remove('open'); }
+function handleManageBg(e) { if (e.target === document.getElementById('manageOverlay')) closeManage(); }
+
 // ── INIT ──────────────────────────────────────────────────────────────────
 applyDayColor("mon");
 refreshBox();
+
+// Set days-col height to match lunchbox top → week-strip bottom on desktop
+function sizeDaysCol() {
+  if (window.innerWidth <= 600) return; // mobile handles itself
+  const lb = document.querySelector('.lunchbox-wrap');
+  const ws = document.querySelector('.week-strip');
+  const dc = document.querySelector('.days-col');
+  if (!lb || !ws || !dc) return;
+  const lbR = lb.getBoundingClientRect();
+  const wsR = ws.getBoundingClientRect();
+  dc.style.height = Math.round(wsR.bottom - lbR.top) + 'px';
+}
+window.addEventListener('load', sizeDaysCol);
+window.addEventListener('resize', sizeDaysCol);
+setTimeout(sizeDaysCol, 100);
 </script>
 </body>
 </html>
