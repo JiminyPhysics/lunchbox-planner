@@ -1521,7 +1521,7 @@ function resetDisabled() {
   document.querySelectorAll('.manage-food-btn').forEach(btn => btn.classList.remove('disabled'));
 }
 
-function openManage() {
+function buildManageGrid() {
   const body = document.getElementById('manageBody');
   body.innerHTML = '';
   const secOrder  = ['main','veggie','fruit','protein','treat'];
@@ -1535,13 +1535,20 @@ function openManage() {
     const grid = document.createElement('div'); grid.className = 'manage-grid';
     FOODS[sec].items.forEach(food => {
       const btn = document.createElement('button');
-      btn.className = 'manage-food-btn' + (isEnabled(food.name) ? '' : ' disabled');
+      btn.className = 'manage-food-btn';
       btn.dataset.name = food.name;
       btn.innerHTML = `<span class="mf-emoji">${food.emoji}</span>${food.name}`;
       btn.onclick = () => toggleFood(food.name);
       grid.appendChild(btn);
     });
     body.appendChild(grid);
+  });
+}
+
+function openManage() {
+  // Just refresh disabled states — no DOM rebuild
+  document.querySelectorAll('.manage-food-btn').forEach(btn => {
+    btn.classList.toggle('disabled', !isEnabled(btn.dataset.name));
   });
   document.getElementById('manageOverlay').classList.add('open');
 }
@@ -1551,6 +1558,7 @@ function handleManageBg(e) { if (e.target === document.getElementById('manageOve
 // ── INIT ──────────────────────────────────────────────────────────────────
 applyDayColor("mon");
 refreshBox();
+buildManageGrid();
 
 // Set days-col height to match lunchbox top → week-strip bottom on desktop
 function sizeDaysCol() {
