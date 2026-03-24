@@ -412,7 +412,7 @@ body::before {
   display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap;
 }
 .shop-trigger, .menu-trigger, .manage-trigger {
-  border: none; border-radius: 999px;
+  border: none; border-radius: 18px;
   padding: 14px 16px; font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1rem; font-weight: 800;
   cursor: pointer; flex: 1;
   transition: all 0.2s; position: relative; overflow: hidden;
@@ -550,7 +550,7 @@ body::before {
   text-decoration: none;
   background: transparent;
   border: 2px solid #F5C842;
-  border-radius: 999px;
+  border-radius: 18px;
   padding: 10px 22px;
 }
 .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: white; border-radius: 14px; padding: 12px 24px; font-weight: 800; font-size: 0.95rem; z-index: 9999; opacity: 0; pointer-events: none; transition: all 0.3s; white-space: nowrap; }
@@ -563,26 +563,25 @@ body::before {
   body { overflow: hidden; height: 100dvh; }
 
   .app {
-    padding: 0 10px 8px;
+    padding: 10px 10px 10px;
     height: 100dvh;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 0;
     overflow: hidden;
   }
 
   /* Top bar and bottom items fixed, content-area fills middle */
   .bottom-btns { flex-shrink: 0; margin-top: 0; }
-  .coffee-link { flex-shrink: 0; margin-top: 0; }
 
-  /* Top bar — grows slightly to absorb some spare space */
+  /* Top bar — compact, fixed size */
   .top-bar {
     padding: 8px 12px;
-    margin-bottom: 6px;
+    margin-bottom: 0;
     border-radius: 14px;
     gap: 8px;
-    flex: 1;
-    max-height: 76px;
+    flex-shrink: 0;
   }
   .logo-text h1 { font-size: 1.2rem; }
   .logo-text p  { display: none; }
@@ -590,25 +589,27 @@ body::before {
   .mascot-big { width: 38px; height: 38px; font-size: 1.3rem; }
   .top-bar-mascot { gap: 8px; }
   .mascot-day-label { font-size: 1rem; }
-  .mascot-msg { font-size: 0.82rem; margin-top: 1px; min-height: 1em; }
+  .mascot-speech { width: 140px; }
+  .mascot-msg { font-size: 0.68rem; margin-top: 1px; min-height: 1em; }
   .mascot-progress { gap: 4px; margin-top: 4px; }
   .prog-dot { width: 8px; height: 8px; }
 
-  /* Content area fills remaining space, takes 4x more than top-bar */
+  /* Content area fills remaining space */
   .content-area {
     display: flex;
     flex-direction: column;
     gap: 0;
-    flex: 4;
+    flex: 1;
     min-height: 0;
     align-items: stretch;
+    justify-content: space-between;
   }
 
   .day-entry { flex: 1; flex-direction: column; align-items: stretch; }
   .day-btn { width: 100%; }
   .day-btn-inner {
-    padding: 10px 4px 8px;
-    border-radius: 14px;
+    padding: 6px 4px;
+    border-radius: 12px;
     aspect-ratio: 1;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
@@ -625,10 +626,27 @@ body::before {
   .day-dots-row { gap: 2px; margin-top: 4px; justify-content: center; }
   .day-dot { width: 6px; height: 6px; }
 
-  /* Week strip */
-  .week-strip-title { font-size: 0.9rem; margin-bottom: 5px; }
-  .strip-name  { font-size: 0.7rem; }
-  .strip-foods { font-size: 1rem; min-height: 22px; }
+  /* Days col — centred between top bar and lunchbox */
+  .days-col {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    gap: 5px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    margin: 6px 0;
+  }
+
+  /* Right col: even spacing between all elements */
+  .right-col {
+    min-width: 0; overflow: hidden;
+    display: flex; flex-direction: column;
+    justify-content: flex-start;
+    flex: 1; min-height: 0;
+    gap: 8px;
+  }
 
   /* Lunchbox — square using vw units */
   .lunchbox-wrap {
@@ -656,46 +674,20 @@ body::before {
   .cell-label { font-size: 0.6rem; top: 4px; }
 
   /* Week strip */
-  .week-strip { padding: 8px 12px; flex-shrink: 0; border-radius: 14px; }
+  .week-strip { padding: 8px 12px; flex-shrink: 0; border-radius: 14px; margin-top: 0; }
   .week-strip-title { font-size: 0.78rem; margin-bottom: 5px; }
   .strip-name  { font-size: 0.55rem; }
   .strip-foods { font-size: 0.9rem; min-height: 22px; }
 
-  /* Days col — grows between top-bar and lunchbox, buttons centred in that space */
-  .days-col {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0;
-    gap: 5px;
-    flex-shrink: 0;
-    flex-grow: 1;
-    max-height: 90px;
-    margin-bottom: 0;
-  }
-
-  /* Right col: stack from top, coffee auto-pushes to bottom */
-  .right-col {
-    min-width: 0; overflow: hidden;
-    display: flex; flex-direction: column;
-    justify-content: flex-start;
-    flex: 1; min-height: 0;
-    gap: 0;
-  }
-
-  /* Week strip snug below lunchbox */
-  .week-strip { padding: 8px 12px; flex-shrink: 0; border-radius: 14px; margin-top: 8px; }
-
   /* Buttons immediately below week strip */
-  .bottom-btns { margin-top: 8px; gap: 8px; flex-shrink: 0; }
+  .bottom-btns { margin-top: 0; gap: 8px; flex-shrink: 0; }
   .shop-trigger, .menu-trigger {
-    padding: 10px 12px; font-size: 0.88rem; border-radius: 999px;
+    padding: 10px 12px; font-size: 0.88rem; border-radius: 18px;
   }
 
-  /* Coffee pinned to bottom */
-  .coffee-link { margin-top: auto; padding-bottom: 2px; flex-shrink: 0; }
-  .coffee-link a { font-size: 0.75rem; padding: 7px 16px; }
+  /* Coffee */
+  .coffee-link { margin-top: 0; padding-bottom: 2px; flex-shrink: 0; }
+  .coffee-link a { font-size: 0.75rem; padding: 10px 16px; }
 
   /* Picker */
   .food-grid { grid-template-columns: repeat(3, 1fr); }
