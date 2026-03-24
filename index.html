@@ -461,7 +461,9 @@ body::before {
   backdrop-filter: blur(6px); z-index: 100;
   display: flex; align-items: center; justify-content: center; padding: 16px;
   opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  will-change: opacity;
 }
+.overlay.no-blur { backdrop-filter: none; }
 .overlay.open { opacity: 1; pointer-events: all; }
 
 /* ── PICKER MODAL ───────────────────────────────────── */
@@ -507,6 +509,7 @@ body::before {
   box-shadow: var(--shadow-pop); transform: scale(0.88) translateY(30px);
   transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
   max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;
+  will-change: transform;
 }
 .overlay.open .shop-modal { transform: scale(1) translateY(0); }
 .shop-header { padding: 24px 24px 16px; background: #F5C842; border-radius: 28px 28px 0 0; color: #7a6000; }
@@ -599,60 +602,23 @@ body::before {
   .mascot-progress { gap: 4px; margin-top: 4px; }
   .prog-dot { width: 8px; height: 8px; }
 
-  /* Content area fills remaining space */
+  /* Flatten the whole layout — every element a direct flex child of app */
   .content-area {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    flex: 1;
-    min-height: 0;
-    align-items: stretch;
-    justify-content: space-between;
+    display: contents; /* dissolve this wrapper so children go direct into app */
   }
 
-  .day-entry { flex: 1; flex-direction: column; align-items: stretch; }
-  .day-btn { width: 100%; }
-  .day-btn-inner {
-    padding: 6px 4px;
-    border-radius: 12px;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    box-shadow: none;
-    max-height: 64px; /* prevents overflow while keeping buttons chunky */
-  }
-  .day-btn[data-day="mon"] .day-btn-inner { box-shadow: none; }
-  .day-btn[data-day="tue"] .day-btn-inner { box-shadow: none; }
-  .day-btn[data-day="wed"] .day-btn-inner { box-shadow: none; }
-  .day-btn[data-day="thu"] .day-btn-inner { box-shadow: none; }
-  .day-btn[data-day="fri"] .day-btn-inner { box-shadow: none; }
-  .day-btn:hover  { transform: scale(1.04); }
-  .day-btn.active { transform: scale(1.06); opacity: 1; filter: saturate(1); }
-  .day-name { font-size: 0.78rem; }
-  .day-dots-row { gap: 2px; margin-top: 4px; justify-content: center; }
-  .day-dot { width: 6px; height: 6px; }
-
-  /* Days col — centred between top bar and lunchbox */
-  .days-col {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 2px;
-    gap: 4px;
-    flex-shrink: 0;
-    flex-grow: 0;
-    margin: 6px 0;
-  }
-
-  /* Right col: space elements evenly to fill full height */
   .right-col {
-    min-width: 0; overflow: hidden;
-    display: flex; flex-direction: column;
-    justify-content: space-between;
-    flex: 1; min-height: 0;
-    gap: 0;
-    padding-bottom: 8px; /* bottom border */
+    display: contents; /* dissolve this wrapper too */
   }
+
+  /* Now all elements are direct children of app which has space-between */
+  .top-bar    { flex-shrink: 0; order: 1; }
+  .days-col   { flex-shrink: 0; order: 2; margin: 0; padding: 0 2px; gap: 4px;
+                display: flex; flex-direction: row; justify-content: space-between; align-items: center; }
+  .lunchbox-wrap { flex-shrink: 0; order: 3; }
+  .week-strip { flex-shrink: 0; order: 4; }
+  .bottom-btns { flex-shrink: 0; order: 5; margin-top: 0; }
+  .coffee-link { flex-shrink: 0; order: 6; margin-top: 0; padding-bottom: 0; }
 
   /* Lunchbox — square using vw units */
   .lunchbox-wrap {
@@ -935,7 +901,7 @@ body::before {
 </div>
 
 <!-- MANAGE FOODS -->
-<div class="overlay" id="manageOverlay" onclick="handleManageBg(event)">
+<div class="overlay no-blur" id="manageOverlay" onclick="handleManageBg(event)">
   <div class="shop-modal">
     <div class="shop-header" style="background: #F9C0BB; color: #8a3030;">
       <h2>⚙️ Manage Foods</h2>
