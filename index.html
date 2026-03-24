@@ -610,10 +610,10 @@ body::before {
   .day-btn-inner {
     padding: 6px 4px;
     border-radius: 12px;
-    aspect-ratio: 1;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     box-shadow: none;
+    max-height: 64px; /* prevents overflow while keeping buttons chunky */
   }
   .day-btn[data-day="mon"] .day-btn-inner { box-shadow: none; }
   .day-btn[data-day="tue"] .day-btn-inner { box-shadow: none; }
@@ -632,8 +632,8 @@ body::before {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    padding: 0;
-    gap: 5px;
+    padding: 0 2px;
+    gap: 4px;
     flex-shrink: 0;
     flex-grow: 0;
     margin: 6px 0;
