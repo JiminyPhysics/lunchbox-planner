@@ -9,16 +9,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;700;800;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --sky: #E8F4FD;
-  --grass: #4CAF50;
+  --sky: #F5EFE0;
+  --grass: #5DC8BE;
   --ink: #1A1A2E;
   --muted: #6B7280;
-  --coral: #FF6B6B;
-  --mon-c: #FF6B6B; --tue-c: #FF9F43; --wed-c: #26C6DA;
-  --thu-c: #7C4DFF; --fri-c: #FF4081;
-  --day-color: #FF6B6B;
+  --coral: #F27B6E;
+  --mon-c: #F27B6E; --tue-c: #F9C0BB; --wed-c: #A8E6DF;
+  --thu-c: #5DC8BE; --fri-c: #F5C842;
+  --day-color: #F27B6E;
   --r-xl: 28px;
-  --shadow-card: 0 4px 20px rgba(0,0,0,0.10);
+  --shadow-card: 0 4px 20px rgba(0,0,0,0.08);
   --shadow-pop:  0 12px 40px rgba(0,0,0,0.18);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,8 +33,8 @@ body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0;
   background:
-    radial-gradient(ellipse 80% 40% at 10% 0%, #FFF9C455 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 90% 100%, #E1F5FE66 0%, transparent 60%);
+    radial-gradient(ellipse 80% 40% at 10% 0%, #FFF3CC44 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 100%, #C8EEE844 0%, transparent 60%);
   pointer-events: none;
 }
 .bg-doodles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
@@ -57,11 +57,11 @@ body::before {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  background: white;
+  background: var(--coral);
   border-radius: var(--r-xl);
   padding: 14px 20px;
   margin-bottom: 20px;
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 4px 20px rgba(255,107,107,0.4);
   flex-shrink: 0;
 }
 
@@ -74,14 +74,13 @@ body::before {
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
   font-size: 1.8rem; box-shadow: 0 4px 12px rgba(255,107,107,0.4);
   flex-shrink: 0;
-  /* static — no animation */
 }
 @keyframes bob {
   0%,100% { transform: translateY(0) rotate(-3deg); }
   50%      { transform: translateY(-6px) rotate(3deg); }
 }
-.logo-text h1 { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--ink); line-height: 1; }
-.logo-text p  { font-size: 0.78rem; font-weight: 700; color: var(--muted); }
+.logo-text h1 { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.5rem; font-weight: 900; color: white; line-height: 1; }
+.logo-text p  { font-size: 0.78rem; font-weight: 700; color: rgba(255,255,255,0.8); }
 
 /* Right side: mascot */
 .top-bar-mascot {
@@ -96,15 +95,15 @@ body::before {
   animation: bob 2.4s ease-in-out infinite;
 }
 .mascot-speech { z-index: 1; width: 220px; }
-.mascot-day-label { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.2rem; font-weight: 800; color: var(--ink); line-height: 1.1; }
-.mascot-msg { font-size: 0.85rem; font-weight: 700; color: var(--muted); margin-top: 2px; min-height: 2.4em; transition: all 0.3s; }
+.mascot-day-label { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.2rem; font-weight: 800; color: white; line-height: 1.1; }
+.mascot-msg { font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.85); margin-top: 2px; min-height: 2.4em; transition: all 0.3s; }
 .mascot-progress { display: flex; gap: 7px; margin-top: 8px; align-items: center; }
 .prog-dot {
   width: 12px; height: 12px; border-radius: 50%;
-  background: #E5E7EB; border: 2px solid #D1D5DB;
+  background: rgba(255,255,255,0.35); border: 2px solid rgba(255,255,255,0.5);
   transition: background 0.3s, transform 0.3s, border-color 0.3s;
 }
-.prog-dot.filled { background: var(--grass); border-color: #2e7d32; transform: scale(1.3); }
+.prog-dot.filled { background: #FFD93D; border-color: #FFD93D; transform: scale(1.3); }
 
 /* ── CONTENT AREA ───────────────────────────────────── */
 .content-area {
@@ -152,11 +151,11 @@ body::before {
   border-radius: 18px;
   height: 75px;
 }
-.day-btn[data-day="mon"] .day-btn-inner { background: var(--mon-c); box-shadow: 0 5px 14px rgba(255,107,107,.4); }
-.day-btn[data-day="tue"] .day-btn-inner { background: var(--tue-c); box-shadow: 0 5px 14px rgba(255,159,67,.4); }
-.day-btn[data-day="wed"] .day-btn-inner { background: var(--wed-c); box-shadow: 0 5px 14px rgba(38,198,218,.4); }
-.day-btn[data-day="thu"] .day-btn-inner { background: var(--thu-c); box-shadow: 0 5px 14px rgba(124,77,255,.4); }
-.day-btn[data-day="fri"] .day-btn-inner { background: var(--fri-c); box-shadow: 0 5px 14px rgba(255,64,129,.4); }
+.day-btn[data-day="mon"] .day-btn-inner { background: var(--mon-c); box-shadow: 0 5px 14px rgba(242,123,110,.4); }
+.day-btn[data-day="tue"] .day-btn-inner { background: var(--tue-c); box-shadow: 0 5px 14px rgba(249,192,187,.4); }
+.day-btn[data-day="wed"] .day-btn-inner { background: var(--wed-c); box-shadow: 0 5px 14px rgba(168,230,223,.4); }
+.day-btn[data-day="thu"] .day-btn-inner { background: var(--thu-c); box-shadow: 0 5px 14px rgba(93,200,190,.4); }
+.day-btn[data-day="fri"] .day-btn-inner { background: var(--fri-c); box-shadow: 0 5px 14px rgba(245,200,66,.4); }
 
 .day-name {
   font-family: 'Baloo 2', system-ui, sans-serif; font-size: 0.83rem; font-weight: 800;
@@ -198,25 +197,20 @@ body::before {
 
 /* The box body */
 .box-body {
-  background: linear-gradient(160deg, #E8E8E8 0%, #CACACA 100%);
+  background: #C8EEE8;
   border-radius: 16px;
   padding: 10px;
   box-shadow:
-    inset 0 2px 6px rgba(255,255,255,0.6),
-    inset 0 -3px 8px rgba(0,0,0,0.15),
-    0 6px 20px rgba(0,0,0,0.18);
-  border: 2.5px solid #B0B0B0;
+    inset 0 2px 6px rgba(255,255,255,0.5),
+    inset 0 -3px 8px rgba(0,0,0,0.08),
+    0 6px 20px rgba(93,200,190,0.25);
+  border: 2.5px solid #A8D8D2;
   position: relative;
 }
 
 /* ── LUNCHBOX INTERIOR GRID ─────────────────────────── */
-/* Layout:
-   [  Main (tall) ] [ Veggie  ]
-   [  Main (tall) ] [ Fruit   ]
-   [ Protein      ] [ Treat   ]
-*/
 .lunchbox-inner {
-  background: #F0EBE0;
+  background: #EFF9F7;
   border-radius: 10px;
   display: grid;
   grid-template-columns: 1.5fr 1fr;
@@ -229,28 +223,28 @@ body::before {
 
 .cell {
   border-radius: 10px; background: white;
-  border: 2px dashed #D4C9B5;
-  display: flex; flex-direction: row;  /* side-by-side layout */
+  border: 2px dashed #A8E6DF;
+  display: flex; flex-direction: row;
   align-items: center; justify-content: center;
   gap: 6px;
   cursor: pointer;
   transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
   position: relative;
   overflow: hidden;
-  padding: 8px 10px;  /* even padding all round, no bottom reserve for label */
+  padding: 8px 10px;
   user-select: none;
 }
 .cell:hover {
   border-style: solid; border-color: var(--day-color, var(--coral));
   box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--day-color, var(--coral)) 15%, transparent),
-              0 4px 14px rgba(0,0,0,0.10);
-  background: #fffdf9;
+              0 4px 14px rgba(0,0,0,0.08);
+  background: #FFFAF8;
 }
-.cell:active { background: #fff8f0; }
+.cell:active { background: #FEF0EE; }
 .cell.filled {
   border-style: solid;
   border-color: var(--day-color, var(--coral));
-  background: #EEF9EE;
+  background: #FEF0EE;
 }
 .cell-label {
   position: absolute; top: 8px; left: 0; right: 0;
@@ -424,21 +418,21 @@ body::before {
   transition: all 0.2s; position: relative; overflow: hidden;
 }
 .shop-trigger {
-  background: linear-gradient(135deg, #43E97B 0%, #38F9D7 100%);
-  color: white; box-shadow: 0 8px 24px rgba(67,233,123,0.4);
+  background: #F5C842;
+  color: #7a6000; box-shadow: 0 8px 24px rgba(245,200,66,0.4);
   margin-top: 0;
 }
-.shop-trigger:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(67,233,123,0.5); }
+.shop-trigger:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(245,200,66,0.5); }
 .menu-trigger {
-  background: linear-gradient(135deg, #A29BFE 0%, #6C5CE7 100%);
-  color: white; box-shadow: 0 8px 24px rgba(108,92,231,0.35);
+  background: #5DC8BE;
+  color: white; box-shadow: 0 8px 24px rgba(93,200,190,0.35);
 }
-.menu-trigger:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(108,92,231,0.5); }
+.menu-trigger:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(93,200,190,0.5); }
 .manage-trigger {
-  background: linear-gradient(135deg, #636e72, #2d3436);
-  color: white; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  background: #F9C0BB;
+  color: #8a3030; box-shadow: 0 8px 24px rgba(249,192,187,0.4);
 }
-.manage-trigger:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
+.manage-trigger:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(249,192,187,0.5); }
 
 /* ── MANAGE FOODS ────────────────────────────────────── */
 .manage-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
@@ -552,17 +546,18 @@ body::before {
   font-family: 'Nunito', sans-serif;
   font-size: 0.92rem;
   font-weight: 800;
-  color: #1a1a1a;
+  color: #9a7a00;
   text-decoration: none;
-  background: #FFDD00;
+  background: transparent;
+  border: 2px solid #F5C842;
   border-radius: 999px;
   padding: 10px 22px;
-  box-shadow: 0 4px 14px rgba(255,221,0,0.4);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, background 0.2s, color 0.2s;
 }
 .coffee-link a:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255,221,0,0.55);
+  background: #F5C842;
+  color: #7a6000;
 }
 .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: white; border-radius: 14px; padding: 12px 24px; font-weight: 800; font-size: 0.95rem; z-index: 9999; opacity: 0; pointer-events: none; transition: all 0.3s; white-space: nowrap; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -982,7 +977,7 @@ body::before {
 // ── DATA ──────────────────────────────────────────────────────────────────
 const DAYS = ["mon","tue","wed","thu","fri"];
 const DAY_NAMES   = {mon:"Monday",tue:"Tuesday",wed:"Wednesday",thu:"Thursday",fri:"Friday"};
-const DAY_COLORS  = {mon:"#FF6B6B",tue:"#FF9F43",wed:"#26C6DA",thu:"#7C4DFF",fri:"#FF4081"};
+const DAY_COLORS  = {mon:"#F27B6E",tue:"#F9C0BB",wed:"#A8E6DF",thu:"#5DC8BE",fri:"#F5C842"};
 const ALL_SECS    = ["main","veggie","fruit","protein","treat"];
 
 const MASCOT_FACES = { 0:"😴", 1:"😊", 2:"😁", 3:"🤩", 4:"😋", 5:"🥳" };
