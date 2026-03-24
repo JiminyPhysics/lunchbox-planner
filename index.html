@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>My Lunchbox Planner 🍱</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -563,7 +563,7 @@ body::before {
   body { overflow: hidden; height: 100dvh; }
 
   .app {
-    padding: 10px 10px 10px;
+    padding: max(env(safe-area-inset-top, 10px), 10px) 10px 10px;
     height: 100dvh;
     display: flex;
     flex-direction: column;
@@ -639,13 +639,1569 @@ body::before {
     margin: 6px 0;
   }
 
-  /* Right col: even spacing between all elements */
+  /* Right col: space elements evenly to fill full height */
   .right-col {
     min-width: 0; overflow: hidden;
     display: flex; flex-direction: column;
-    justify-content: flex-start;
+    justify-content: space-between;
     flex: 1; min-height: 0;
+    gap: 0;
+    padding-bottom: 8px; /* bottom border */
+  }
+
+  /* Lunchbox — square using vw units */
+  .lunchbox-wrap {
+    padding: 8px; border-radius: 16px;
+    flex-shrink: 0;
+    width: 100%;
+    height: calc(100vw - 20px);
+  }
+  .box-scene { height: 100%; display: flex; flex-direction: column; }
+  .box-body {
+    padding: 7px; border-radius: 12px;
+    flex: 1; min-height: 0;
+  }
+  .lunchbox-inner {
+    height: 100%;
+    width: 100%;
+    gap: 5px; padding: 6px; border-radius: 8px;
+  }
+  .cell { border-radius: 7px; }
+  .cell-row { gap: 5px; padding: 18px 8px 6px; }
+  .cell-row .cell-emoji { font-size: 1.5rem; }
+  .cell-row .cell-plus  { font-size: 1.3rem; }
+  .cell-text .cell-food-name { font-size: 0.75rem; }
+  .cell-main .cell-emoji { font-size: 2rem; }
+  .cell-label { font-size: 0.6rem; top: 4px; }
+
+  /* Week strip */
+  .week-strip { padding: 8px 12px; flex-shrink: 0; border-radius: 14px; margin-top: 0; }
+  .week-strip-title { font-size: 0.78rem; margin-bottom: 5px; }
+  .strip-name  { font-size: 0.55rem; }
+  .strip-foods { font-size: 0.9rem; min-height: 22px; }
+
+  /* Buttons immediately below week strip */
+  .bottom-btns { margin-top: 0; gap: 8px; flex-shrink: 0; }
+  .shop-trigger, .menu-trigger {
+    padding: 10px 12px; font-size: 0.88rem; border-radius: 18px;
+  }
+
+  /* Coffee */
+  .coffee-link { margin-top: 0; padding-bottom: 2px; flex-shrink: 0; }
+  .coffee-link a { font-size: 0.75rem; padding: 10px 16px; }
+
+  /* Picker */
+  .food-grid { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-doodles" id="bgDoodles"></div>
+
+<div class="app">
+
+  <!-- COMBINED HEADER + MASCOT BAR -->
+  <div class="top-bar">
+    <!-- Left: title text only -->
+    <div class="top-bar-logo">
+      <div class="logo-text">
+        <h1>My Lunchbox!</h1>
+        <p>Plan your week of yummy lunches 🌟</p>
+      </div>
+    </div>
+    <!-- Right: mascot with fixed-size face -->
+    <div class="top-bar-mascot">
+      <div class="mascot-big" id="mascotFace">😋</div>
+      <div class="mascot-speech">
+        <div class="mascot-day-label" id="mascotDayLabel">Monday</div>
+        <div class="mascot-msg" id="mascotMsg">Tap a section to fill your lunchbox!</div>
+        <div class="mascot-progress" id="mascotProgress">
+          <div class="prog-dot" data-sec="main"></div>
+          <div class="prog-dot" data-sec="veggie"></div>
+          <div class="prog-dot" data-sec="fruit"></div>
+          <div class="prog-dot" data-sec="protein"></div>
+          <div class="prog-dot" data-sec="treat"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT AREA: days + right column -->
+  <div class="content-area">
+
+    <!-- DAY COLUMN -->
+    <div class="days-col">
+
+      <div class="day-entry">
+        <button class="day-btn active" data-day="mon" onclick="selectDay('mon')">
+          <div class="day-btn-inner">
+            <div class="day-name">Monday</div>
+            <div class="day-dots-row" id="ddots-mon">
+              <div class="day-dot"></div><div class="day-dot"></div>
+              <div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div>
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <div class="day-entry">
+        <button class="day-btn" data-day="tue" onclick="selectDay('tue')">
+          <div class="day-btn-inner">
+            <div class="day-name">Tuesday</div>
+            <div class="day-dots-row" id="ddots-tue">
+              <div class="day-dot"></div><div class="day-dot"></div>
+              <div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div>
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <div class="day-entry">
+        <button class="day-btn" data-day="wed" onclick="selectDay('wed')">
+          <div class="day-btn-inner">
+            <div class="day-name">Wednesday</div>
+            <div class="day-dots-row" id="ddots-wed">
+              <div class="day-dot"></div><div class="day-dot"></div>
+              <div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div>
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <div class="day-entry">
+        <button class="day-btn" data-day="thu" onclick="selectDay('thu')">
+          <div class="day-btn-inner">
+            <div class="day-name">Thursday</div>
+            <div class="day-dots-row" id="ddots-thu">
+              <div class="day-dot"></div><div class="day-dot"></div>
+              <div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div>
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <div class="day-entry">
+        <button class="day-btn" data-day="fri" onclick="selectDay('fri')">
+          <div class="day-btn-inner">
+            <div class="day-name">Friday!</div>
+            <div class="day-dots-row" id="ddots-fri">
+              <div class="day-dot"></div><div class="day-dot"></div>
+              <div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div>
+            </div>
+          </div>
+        </button>
+      </div>
+
+    </div><!-- /days-col -->
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-col">
+
+      <!-- LUNCHBOX -->
+      <div class="lunchbox-wrap">
+        <div class="box-scene">
+          <!-- BOX BODY -->
+          <div class="box-body">
+            <div class="lunchbox-inner">
+
+              <!-- Main meal — spans rows 1+2 on left — stacked layout -->
+              <div class="cell cell-main" data-sec="main" onclick="openPicker('main')">
+                <div class="cell-emoji" id="e-main" style="display:none"></div>
+                <div class="cell-food-name" id="n-main"></div>
+                <div class="cell-plus" id="p-main">＋</div>
+                <div class="cell-label">Main Meal</div>
+              </div>
+
+              <!-- Veggie — top right — side-by-side layout -->
+              <div class="cell cell-veggie cell-row" data-sec="veggie" onclick="openPicker('veggie')">
+                <div class="cell-emoji" id="e-veggie" style="display:none"></div>
+                <div class="cell-plus" id="p-veggie">＋</div>
+                <div class="cell-text" style="display:none">
+                  <div class="cell-food-name" id="n-veggie"></div>
+                </div>
+                <div class="cell-label">Veggie</div>
+              </div>
+
+              <!-- Fruit — middle right — side-by-side layout -->
+              <div class="cell cell-fruit cell-row" data-sec="fruit" onclick="openPicker('fruit')">
+                <div class="cell-emoji" id="e-fruit" style="display:none"></div>
+                <div class="cell-plus" id="p-fruit">＋</div>
+                <div class="cell-text" style="display:none">
+                  <div class="cell-food-name" id="n-fruit"></div>
+                </div>
+                <div class="cell-label">Fruit</div>
+              </div>
+
+              <!-- Protein — bottom left — side-by-side layout -->
+              <div class="cell cell-protein cell-row" data-sec="protein" onclick="openPicker('protein')">
+                <div class="cell-emoji" id="e-protein" style="display:none"></div>
+                <div class="cell-plus" id="p-protein">＋</div>
+                <div class="cell-text" style="display:none">
+                  <div class="cell-food-name" id="n-protein"></div>
+                </div>
+                <div class="cell-label">Protein</div>
+              </div>
+
+              <!-- Treat — bottom right — side-by-side layout -->
+              <div class="cell cell-treat cell-row" data-sec="treat" onclick="openPicker('treat')">
+                <div class="cell-emoji" id="e-treat" style="display:none"></div>
+                <div class="cell-plus" id="p-treat">＋</div>
+                <div class="cell-text" style="display:none">
+                  <div class="cell-food-name" id="n-treat"></div>
+                </div>
+                <div class="cell-label">Treat</div>
+              </div>
+
+            </div>
+          </div><!-- /box-body -->
+        </div><!-- /box-scene -->
+      </div>
+
+      <!-- WEEK STRIP -->
+      <div class="week-strip">
+        <div class="week-strip-title">📅 Your whole week</div>
+        <div class="strip-grid">
+          <div class="strip-day"><div class="strip-name">Mon</div><div class="strip-foods" id="sf-mon"><span class="strip-empty">—</span></div></div>
+          <div class="strip-day"><div class="strip-name">Tue</div><div class="strip-foods" id="sf-tue"><span class="strip-empty">—</span></div></div>
+          <div class="strip-day"><div class="strip-name">Wed</div><div class="strip-foods" id="sf-wed"><span class="strip-empty">—</span></div></div>
+          <div class="strip-day"><div class="strip-name">Thu</div><div class="strip-foods" id="sf-thu"><span class="strip-empty">—</span></div></div>
+          <div class="strip-day"><div class="strip-name">Fri</div><div class="strip-foods" id="sf-fri"><span class="strip-empty">—</span></div></div>
+        </div>
+      </div>
+
+      <div class="bottom-btns">
+        <button class="shop-trigger" onclick="openShop()">🛒 Shopping List</button>
+        <button class="menu-trigger" onclick="openMenu()">📋 View Menu</button>
+        <button class="manage-trigger" onclick="openManage()">⚙️ Manage Foods</button>
+      </div>
+
+      <div class="coffee-link">
+        <a href="https://buymeacoffee.com/JiminyPhysics" target="_blank" rel="noopener">
+          ☕ Buy me a coffee to help fuel new apps
+        </a>
+      </div>
+
+    </div><!-- /right-col -->
+  </div><!-- /content-area -->
+
+</div><!-- /app -->
+
+<!-- FOOD PICKER -->
+<div class="overlay" id="pickerOverlay" onclick="handlePickerBg(event)">
+  <div class="picker-modal">
+    <div class="picker-header">
+      <div class="picker-icon" id="pickerIcon"></div>
+      <div class="picker-titles"><h2 id="pickerTitle"></h2><p id="pickerSub"></p></div>
+    </div>
+    <div class="picker-scroll"><div class="food-grid" id="foodGrid"></div></div>
+    <div class="picker-footer">
+      <button class="pf-btn pf-clear"   onclick="clearCell()">🗑 Empty</button>
+      <button class="pf-btn pf-back"    id="pickerBackBtn" onclick="pickerGoBack()" style="display:none">← Back</button>
+      <button class="pf-btn pf-cancel"  id="pickerCancelBtn" onclick="closePicker()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- MENU -->
+<div class="overlay" id="menuOverlay" onclick="handleMenuBg(event)">
+  <div class="shop-modal">
+    <div class="shop-header" style="background: #5DC8BE;">
+      <h2>📋 This Week's Menu</h2>
+      <p>Your lunches for the whole week!</p>
+    </div>
+    <div class="shop-body" id="menuBody"></div>
+    <div class="shop-footer">
+      <button class="sf-btn sf-close" onclick="closeMenu()">Close</button>
+      <button class="sf-btn sf-copy" style="background: #5DC8BE; box-shadow: 0 4px 14px rgba(93,200,190,0.35);" onclick="copyMenu()">📋 Copy to Clipboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE FOODS -->
+<div class="overlay" id="manageOverlay" onclick="handleManageBg(event)">
+  <div class="shop-modal">
+    <div class="shop-header" style="background: #F9C0BB; color: #8a3030;">
+      <h2>⚙️ Manage Foods</h2>
+      <p>Tap any food to hide or show it in the picker</p>
+    </div>
+    <div class="shop-body" id="manageBody"></div>
+    <div class="shop-footer">
+      <button class="sf-btn sf-close" onclick="closeManage()">Done</button>
+      <button class="sf-btn" style="background:#f0f0f0;color:#636e72;" onclick="resetDisabled()">Reset all</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHOP -->
+<div class="overlay" id="shopOverlay" onclick="handleShopBg(event)">
+  <div class="shop-modal">
+    <div class="shop-header"><h2>🛒 Shopping List</h2><p>Everything you need for the whole week!</p></div>
+    <div class="shop-body" id="shopBody"></div>
+    <div class="shop-footer">
+      <button class="sf-btn sf-close" onclick="closeShop()">Close</button>
+      <button class="sf-btn sf-copy"  onclick="copyList()">📋 Copy to Clipboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- CELEBRATE -->
+<div class="celebrate-overlay" id="celebrateOverlay">
+  <div class="celebrate-msg">
+    <span class="celebrate-emoji" id="celebrateEmoji">🎉</span>
+    <div class="celebrate-title" id="celebrateTitle">Lunchbox packed!</div>
+    <div class="celebrate-sub"  id="celebrateSub">What an amazing lunch!</div>
+    <div class="celebrate-btns">
+      <button class="celebrate-close" onclick="closeCelebrate()">Woohoo! 🙌</button>
+      <button class="celebrate-next"  id="celebrateNextBtn" onclick="goNextDay()">Next day →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ Copied to clipboard!</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+const DAYS = ["mon","tue","wed","thu","fri"];
+const DAY_NAMES   = {mon:"Monday",tue:"Tuesday",wed:"Wednesday",thu:"Thursday",fri:"Friday"};
+const DAY_COLORS  = {mon:"#F27B6E",tue:"#F9C0BB",wed:"#A8E6DF",thu:"#5DC8BE",fri:"#F5C842"};
+const ALL_SECS    = ["main","veggie","fruit","protein","treat"];
+
+const MASCOT_FACES = { 0:"😴", 1:"😊", 2:"😁", 3:"🤩", 4:"😋", 5:"🥳" };
+const MASCOT_MSGS  = {
+  0: "Tap a section to fill your lunchbox!",
+  1: "Great start! Keep going! 🎉",
+  2: "Looking yummy! More please! 😋",
+  3: "Almost there! Two more! 🌟",
+  4: "So close! One more section! 🤩",
+  5: ["Perfect lunchbox! Amazing! 🥳","Wow, so yummy! You did it! 🌈","That looks delicious! ⭐"]
+};
+
+const SEC_META = {
+  main:    { label:"Main Meal",     sub:"What's your big yummy lunch?",      icon:"🥪", bg:"#FFEBE5" },
+  veggie:  { label:"Veggies",       sub:"Pick something crunchy & green! 🥦", icon:"🥕", bg:"#E8F5E9" },
+  fruit:   { label:"Fruit",         sub:"Pick something sweet & healthy!",    icon:"🍓", bg:"#E5F9F0" },
+  protein: { label:"Protein Snack", sub:"Something to keep you strong! 💪",   icon:"🧀", bg:"#FFF9E5" },
+  treat:   { label:"Treat",         sub:"Your special yummy reward! 🎉",      icon:"🍬", bg:"#F5E5FF" }
+};
+const SEC_COLORS = { main:"#F27B6E", veggie:"#5DC8BE", fruit:"#A8E6DF", protein:"#F9C0BB", treat:"#F5C842" };
+
+const FOODS = {
+  main: { items:[  // 10 → not a perfect grid, but filling sub-picker handles sandwich/wrap
+    {emoji:"🥪",name:"Sandwich",     ingredients:[{emoji:"🍞",name:"Bread slices",qty:2,unit:""},{emoji:"🧈",name:"Butter / spread",qty:1,unit:"tsp"}], hasFilling:true},
+    {emoji:"🌯",name:"Wrap",         ingredients:[{emoji:"🫓",name:"Wraps / tortillas",qty:1,unit:""}], hasFilling:true},
+    {emoji:"🍕",name:"Pizza Slice",  ingredients:[{emoji:"🍕",name:"Pizza slices",qty:1,unit:""}]},
+    {emoji:"🍝",name:"Pasta",        ingredients:[{emoji:"🍝",name:"Pasta (serves)",qty:1,unit:"serve"},{emoji:"🍅",name:"Pasta sauce",qty:1,unit:"serve"}]},
+    {emoji:"🍱",name:"Sushi Roll",   ingredients:[{emoji:"🍱",name:"Sushi roll packs",qty:1,unit:""}]},
+    {emoji:"🌮",name:"Taco",         ingredients:[{emoji:"🌮",name:"Taco shells",qty:2,unit:""},{emoji:"🥬",name:"Lettuce (shredded)",qty:1,unit:"handful"},{emoji:"🍅",name:"Tomato diced",qty:1,unit:""},{emoji:"🧀",name:"Grated cheese",qty:2,unit:"tbsp"}]},
+    {emoji:"🥙",name:"Pita",         ingredients:[{emoji:"🥙",name:"Pita breads",qty:1,unit:""},{emoji:"🥬",name:"Lettuce leaves",qty:2,unit:""},{emoji:"🍅",name:"Tomato slices",qty:2,unit:""}]},
+    {emoji:"🍛",name:"Rice Bowl",    ingredients:[{emoji:"🍚",name:"Rice (serves)",qty:1,unit:"serve"},{emoji:"🍛",name:"Curry / sauce",qty:1,unit:"serve"}]},
+    {emoji:"🍜",name:"Noodles",      ingredients:[{emoji:"🍜",name:"Noodle packs",qty:1,unit:""}]},
+    {emoji:"🥗",name:"Salad",        ingredients:[{emoji:"🥬",name:"Salad leaves",qty:1,unit:"handful"},{emoji:"🍅",name:"Tomatoes",qty:1,unit:""},{emoji:"🥒",name:"Cucumber slices",qty:4,unit:""}]},
+    {emoji:"🍛",name:"Fried Rice",   ingredients:[{emoji:"🍚",name:"Rice (serves)",qty:1,unit:"serve"},{emoji:"🥚",name:"Eggs",qty:1,unit:""},{emoji:"🥕",name:"Mixed veg",qty:1,unit:"serve"}]},
+    {emoji:"🧆",name:"Fritters",     ingredients:[{emoji:"🧆",name:"Fritters / patties",qty:2,unit:""}]},
+  ]},
+  veggie: { items:[  // 12 → 3×4
+    {emoji:"🥕",name:"Carrots",          ingredients:[{emoji:"🥕",name:"Carrots",qty:2,unit:""}]},
+    {emoji:"🥒",name:"Cucumber",         ingredients:[{emoji:"🥒",name:"Cucumber",qty:1,unit:""}]},
+    {emoji:"🫑",name:"Capsicum",         ingredients:[{emoji:"🫑",name:"Capsicum strips",qty:4,unit:""}]},
+    {emoji:"🥦",name:"Broccoli",         ingredients:[{emoji:"🥦",name:"Broccoli florets",qty:1,unit:"handful"}]},
+    {emoji:"🌽",name:"Corn",             ingredients:[{emoji:"🌽",name:"Baby corn cobs",qty:2,unit:""}]},
+    {emoji:"🍅",name:"Cherry Tomatoes",  ingredients:[{emoji:"🍅",name:"Cherry tomatoes",qty:6,unit:""}]},
+    {emoji:"🥬",name:"Celery",           ingredients:[{emoji:"🥬",name:"Celery sticks",qty:2,unit:""}]},
+    {emoji:"🫛",name:"Snap Peas",        ingredients:[{emoji:"🫛",name:"Snap peas",qty:1,unit:"handful"}]},
+    {emoji:"🫒",name:"Olives",           ingredients:[{emoji:"🫒",name:"Olives",qty:1,unit:"small tub"}]},
+    {emoji:"🥑",name:"Avocado",          ingredients:[{emoji:"🥑",name:"Avocado",qty:0.5,unit:""}]},
+    {emoji:"🌿",name:"Edamame",          ingredients:[{emoji:"🌿",name:"Edamame (frozen)",qty:1,unit:"handful"}]},
+    {emoji:"🥗",name:"Mixed Veggies",    ingredients:[{emoji:"🥕",name:"Carrots",qty:1,unit:""},{emoji:"🥦",name:"Broccoli florets",qty:1,unit:"handful"},{emoji:"🫑",name:"Capsicum strips",qty:2,unit:""},{emoji:"🥒",name:"Cucumber",qty:0.5,unit:""}]},
+  ]},
+  fruit:{ items:[  // 12 → 3×4
+    {emoji:"🍓",name:"Strawberries",     ingredients:[{emoji:"🍓",name:"Strawberries",qty:6,unit:""}]},
+    {emoji:"🍇",name:"Grapes",           ingredients:[{emoji:"🍇",name:"Grapes",qty:1,unit:"small bunch"}]},
+    {emoji:"🍊",name:"Orange",           ingredients:[{emoji:"🍊",name:"Oranges",qty:1,unit:""}]},
+    {emoji:"🍎",name:"Apple",            ingredients:[{emoji:"🍎",name:"Apples",qty:1,unit:""}]},
+    {emoji:"🍌",name:"Banana",           ingredients:[{emoji:"🍌",name:"Bananas",qty:1,unit:""}]},
+    {emoji:"🫐",name:"Blueberries",      ingredients:[{emoji:"🫐",name:"Blueberries",qty:1,unit:"handful"}]},
+    {emoji:"🍉",name:"Watermelon",       ingredients:[{emoji:"🍉",name:"Watermelon slices",qty:2,unit:""}]},
+    {emoji:"🥝",name:"Kiwi",             ingredients:[{emoji:"🥝",name:"Kiwi fruits",qty:1,unit:""}]},
+    {emoji:"🍑",name:"Peach",            ingredients:[{emoji:"🍑",name:"Peaches",qty:1,unit:""}]},
+    {emoji:"🍒",name:"Cherries",         ingredients:[{emoji:"🍒",name:"Cherries",qty:10,unit:""}]},
+    {emoji:"🫒",name:"Olives",           ingredients:[{emoji:"🫒",name:"Olives",qty:1,unit:"small tub"}]},
+    {emoji:"🍓🍇",name:"Mixed Fruit",      ingredients:[{emoji:"🍓",name:"Strawberries",qty:3,unit:""},{emoji:"🍇",name:"Grapes",qty:1,unit:"small bunch"},{emoji:"🍊",name:"Orange segments",qty:0.5,unit:""},{emoji:"🥝",name:"Kiwi",qty:0.5,unit:""}]},
+  ]},
+  protein:{ items:[  // 9 → 3×3
+    {emoji:"🧀",name:"Cheese",           ingredients:[{emoji:"🧀",name:"Cheese slices",qty:2,unit:""}]},
+    {emoji:"🥚",name:"Hard Boiled Egg",  ingredients:[{emoji:"🥚",name:"Eggs",qty:1,unit:""}]},
+    {emoji:"🫘",name:"Beans",            ingredients:[{emoji:"🫘",name:"Beans",qty:1,unit:"serve"}]},
+    {emoji:"🍗",name:"Chicken",          ingredients:[{emoji:"🍗",name:"Chicken pieces",qty:2,unit:""}]},
+    {emoji:"🥩",name:"Deli Meat",        ingredients:[{emoji:"🥩",name:"Deli meat slices",qty:3,unit:""}]},
+    {emoji:"🐟",name:"Tuna",             ingredients:[{emoji:"🐟",name:"Tuna (small tin)",qty:1,unit:""}]},
+    {emoji:"🫙",name:"Yoghurt",          ingredients:[{emoji:"🫙",name:"Yoghurt (tub / pouch)",qty:1,unit:""}]},
+    {emoji:"🌰",name:"Nuts",             ingredients:[{emoji:"🌰",name:"Mixed nuts",qty:1,unit:"small bag"}]},
+    {emoji:"🥓",name:"Ham",              ingredients:[{emoji:"🥓",name:"Ham slices",qty:2,unit:""}]},
+  ]},
+  treat:{ items:[  // 9 → 3×3
+    {emoji:"🍪",name:"Cookie",           ingredients:[{emoji:"🍪",name:"Cookies",qty:2,unit:""}]},
+    {emoji:"🍫",name:"Chocolate",        ingredients:[{emoji:"🍫",name:"Chocolate pieces",qty:2,unit:""}]},
+    {emoji:"🧁",name:"Cupcake",          ingredients:[{emoji:"🧁",name:"Cupcakes",qty:1,unit:""}]},
+    {emoji:"🍩",name:"Donut",            ingredients:[{emoji:"🍩",name:"Donuts",qty:1,unit:""}]},
+    {emoji:"🍰",name:"Cake Slice",       ingredients:[{emoji:"🍰",name:"Cake slices",qty:1,unit:""}]},
+    {emoji:"🥐",name:"Croissant",        ingredients:[{emoji:"🥐",name:"Croissants",qty:1,unit:""}]},
+    {emoji:"🧇",name:"Waffle",           ingredients:[{emoji:"🧇",name:"Waffles",qty:1,unit:""}]},
+    {emoji:"🥞",name:"Pancakes",         ingredients:[{emoji:"🥞",name:"Pancakes",qty:3,unit:""},{emoji:"🍯",name:"Maple syrup",qty:1,unit:"tbsp"}]},
+    {emoji:"🍿",name:"Popcorn",          ingredients:[{emoji:"🍿",name:"Popcorn bags",qty:1,unit:""}]},
+  ]}
+};
+
+const FOOD_MAP = {};
+Object.values(FOODS).forEach(cat => cat.items.forEach(f => { FOOD_MAP[f.name] = f; }));
+
+// Fillings for sandwich and wrap sub-picker
+const FILLINGS = {
+  "Sandwich": [
+    {emoji:"🧀", name:"Cheese",    ingredients:[{emoji:"🧀",name:"Cheese slices",qty:2,unit:""}]},
+    {emoji:"🥓", name:"Ham",       ingredients:[{emoji:"🥓",name:"Ham slices",qty:2,unit:""}]},
+    {emoji:"🫙", name:"Vegemite",  ingredients:[{emoji:"🫙",name:"Vegemite",qty:1,unit:"tsp"}]},
+  ],
+  "Wrap": [
+    {emoji:"🍗", name:"Chicken",       ingredients:[{emoji:"🍗",name:"Chicken (cooked)",qty:1,unit:"serve"},{emoji:"🥬",name:"Lettuce leaves",qty:2,unit:""},{emoji:"🍅",name:"Tomato slices",qty:2,unit:""}]},
+    {emoji:"🧀", name:"Ham & Cheese",  ingredients:[{emoji:"🥓",name:"Ham slices",qty:2,unit:""},{emoji:"🧀",name:"Cheese slices",qty:1,unit:""},{emoji:"🥬",name:"Lettuce leaves",qty:2,unit:""}]},
+  ],
+};
+
+const BREAD_BASED_NAMES = new Set(["Sandwich","Wrap","Pita","Taco"]);
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+let curDay = "mon", curSec = null, pickerSel = null;
+const meals = {};
+DAYS.forEach(d => { meals[d] = {main:null, veggie:null, fruit:null, protein:null, treat:null}; });
+
+// ── DOODLES ───────────────────────────────────────────────────────────────
+(function() {
+  const foods = ["🍕","🍎","🥝","🍓","🍪","🥪","🍇","🍩","🥕","🍌","🧀","🌮","🥦","🌽"];
+  const wrap = document.getElementById("bgDoodles");
+  foods.forEach((f, i) => {
+    const el = document.createElement("div"); el.className = "bg-doodle"; el.textContent = f;
+    el.style.left = (3 + i * 7) + "%";
+    el.style.animationDuration = (18 + i * 2.5) + "s";
+    el.style.animationDelay    = (i * 1.8) + "s";
+    wrap.appendChild(el);
+  });
+})();
+
+// ── DAY COLOUR ────────────────────────────────────────────────────────────
+function applyDayColor(day) {
+  const c = DAY_COLORS[day];
+  document.documentElement.style.setProperty("--day-color", c);
+}
+
+// ── SELECT DAY ────────────────────────────────────────────────────────────
+function selectDay(day) {
+  curDay = day;
+  document.querySelectorAll(".day-btn").forEach(b => b.classList.remove("active"));
+  document.querySelector(`[data-day="${day}"]`).classList.add("active");
+  applyDayColor(day);
+  document.getElementById("mascotDayLabel").textContent = DAY_NAMES[day];
+  refreshBox();
+}
+
+// ── REFRESH BOX ───────────────────────────────────────────────────────────
+function refreshBox() {
+  ALL_SECS.forEach(sec => {
+    const food = meals[curDay][sec];
+    const eEl    = document.getElementById(`e-${sec}`);
+    const nEl    = document.getElementById(`n-${sec}`);
+    const pEl    = document.getElementById(`p-${sec}`);
+    const cell   = document.querySelector(`.cell[data-sec="${sec}"]`);
+    const textEl = cell ? cell.querySelector('.cell-text') : null;
+    if (food) {
+      eEl.textContent = food.emoji; eEl.style.display = "block";
+      nEl.textContent = food.name;  pEl.style.display = "none";
+      if (textEl) textEl.style.display = "flex";
+      cell.classList.add("filled");
+    } else {
+      eEl.style.display = "none"; nEl.textContent = "";
+      pEl.style.display = "block";
+      if (textEl) textEl.style.display = "none";
+      cell.classList.remove("filled");
+    }
+  });
+  refreshMascot();
+  refreshStrip();
+  refreshDayDots();
+}
+
+// ── MASCOT ────────────────────────────────────────────────────────────────
+function refreshMascot() {
+  const count = ALL_SECS.filter(s => meals[curDay][s]).length;
+  document.getElementById("mascotFace").textContent = MASCOT_FACES[count] || "😋";
+  let msg = MASCOT_MSGS[count];
+  if (Array.isArray(msg)) msg = msg[Math.floor(Math.random() * msg.length)];
+  document.getElementById("mascotMsg").textContent = msg || "";
+  document.querySelectorAll(".prog-dot").forEach((dot, i) => {
+    dot.classList.toggle("filled", !!meals[curDay][ALL_SECS[i]]);
+  });
+}
+
+// ── STRIP ─────────────────────────────────────────────────────────────────
+function refreshStrip() {
+  DAYS.forEach(d => {
+    const el = document.getElementById(`sf-${d}`);
+    const items = ALL_SECS.map(s => meals[d][s]).filter(Boolean);
+    el.innerHTML = items.length
+      ? items.map(f => `<span>${f.emoji}</span>`).join("")
+      : `<span class="strip-empty">—</span>`;
+  });
+}
+
+// ── DAY DOTS ──────────────────────────────────────────────────────────────
+function refreshDayDots() {
+  DAYS.forEach(d => {
+    const dots = document.querySelectorAll(`#ddots-${d} .day-dot`);
+    ALL_SECS.forEach((sec, i) => {
+      if (dots[i]) dots[i].classList.toggle("on", !!meals[d][sec]);
+    });
+  });
+}
+
+// ── PICKER ────────────────────────────────────────────────────────────────
+let pendingBase = null; // holds the base item (Sandwich/Wrap) while filling is being chosen
+
+function openPicker(sec) {
+  curSec = sec; pickerSel = meals[curDay][sec]; pendingBase = null;
+  const meta = SEC_META[sec];
+  const icon = document.getElementById("pickerIcon");
+  icon.textContent = meta.icon; icon.style.background = meta.bg;
+  document.getElementById("pickerTitle").textContent = meta.label;
+  document.getElementById("pickerSub").textContent   = meta.sub;
+  renderFoodGrid(FOODS[sec].items, pickerSel?.name);
+  document.getElementById("pickerOverlay").classList.add("open");
+}
+
+function renderFoodGrid(items, selectedName) {
+  const grid = document.getElementById("foodGrid"); grid.innerHTML = "";
+  items.filter(item => isEnabled(item.name)).forEach(item => {
+    const card = document.createElement("div");
+    card.className = "food-card" + (selectedName === item.name ? " selected" : "");
+    card.innerHTML = `<span class="fc-emoji">${item.emoji}</span><div class="fc-name">${item.name}</div>`;
+    card.onclick = () => handleCardClick(item);
+    grid.appendChild(card);
+  });
+  document.getElementById("pickerBackBtn").style.display = pendingBase ? "block" : "none";
+  document.getElementById("pickerCancelBtn").style.display = pendingBase ? "none" : "block";
+}
+
+function pickerGoBack() {
+  pendingBase = null;
+  const meta = SEC_META[curSec];
+  document.getElementById("pickerIcon").textContent = meta.icon;
+  document.getElementById("pickerTitle").textContent = meta.label;
+  document.getElementById("pickerSub").textContent   = meta.sub;
+  renderFoodGrid(FOODS[curSec].items, meals[curDay][curSec]?.name);
+}
+
+function handleCardClick(item) {
+  // If this item has fillings, show the filling sub-picker instead of confirming
+  if (item.hasFilling && FILLINGS[item.name]) {
+    pendingBase = item;
+    const meta = SEC_META[curSec];
+    document.getElementById("pickerIcon").textContent = item.emoji;
+    document.getElementById("pickerTitle").textContent = `${item.name} filling`;
+    document.getElementById("pickerSub").textContent   = "What's inside? 😋";
+    renderFoodGrid(FILLINGS[item.name], null);
+    return;
+  }
+  // If we have a pending base (filling was chosen), merge base + filling
+  if (pendingBase) {
+    const merged = {
+      emoji: pendingBase.emoji,
+      name: `${item.name} ${pendingBase.name}`,
+      ingredients: [...pendingBase.ingredients, ...item.ingredients],
+    };
+    pickerSel = merged;
+    confirmPicker();
+    return;
+  }
+  // Normal item — select and confirm immediately
+  pickerSel = item;
+  confirmPicker();
+}
+function closePicker() {
+  document.getElementById("pickerOverlay").classList.remove("open");
+  curSec = null; pickerSel = null; pendingBase = null;
+}
+function confirmPicker() {
+  if (curSec) {
+    const prev = meals[curDay][curSec];
+    const wasFull = ALL_SECS.every(s => meals[curDay][s]);
+    meals[curDay][curSec] = pickerSel;
+    const nowFull = ALL_SECS.every(s => meals[curDay][s]);
+    if (pickerSel && pickerSel !== prev) {
+      const eEl = document.getElementById(`e-${curSec}`);
+      refreshBox();
+      eEl.classList.remove("pop"); void eEl.offsetWidth; eEl.classList.add("pop");
+      burstConfetti(document.querySelector(`.cell[data-sec="${curSec}"]`));
+      // Show celebration only when newly becoming full
+      if (nowFull && !wasFull) {
+        setTimeout(() => showCelebrate(), 800);
+      }
+    } else {
+      refreshBox();
+    }
+  }
+  closePicker();
+}
+function clearCell() {
+  if (curSec) { meals[curDay][curSec] = null; refreshBox(); }
+  closePicker();
+}
+function handlePickerBg(e) {
+  if (e.target === document.getElementById("pickerOverlay")) closePicker();
+}
+
+// ── CONFETTI ──────────────────────────────────────────────────────────────
+function burstConfetti(cell) {
+  const colors = ["#FF6B6B","#FFD93D","#26C6DA","#7C4DFF","#FF4081","#43E97B","#FF9F43"];
+  const rect = cell.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top  + rect.height / 2;
+  for (let i = 0; i < 14; i++) {
+    const el = document.createElement("div"); el.className = "confetti-piece";
+    el.style.left = cx + "px"; el.style.top = cy + "px";
+    el.style.background = colors[i % colors.length];
+    const angle = (i / 14) * 360;
+    const dist  = 50 + Math.random() * 60;
+    el.style.setProperty("--cx", Math.cos(angle * Math.PI / 180) * dist + "px");
+    el.style.setProperty("--cy", Math.sin(angle * Math.PI / 180) * dist + "px");
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 900);
+  }
+}
+
+// Big confetti shower for full box
+function confettiShower() {
+  const colors = ["#FF6B6B","#FFD93D","#26C6DA","#7C4DFF","#FF4081","#43E97B","#FF9F43","#fff"];
+  for (let i = 0; i < 60; i++) {
+    setTimeout(() => {
+      const el = document.createElement("div"); el.className = "confetti-piece";
+      el.style.left = (10 + Math.random() * 80) + "vw";
+      el.style.top  = "-10px";
+      el.style.position = "fixed";
+      el.style.background = colors[Math.floor(Math.random() * colors.length)];
+      const tx = (Math.random() - 0.5) * 200;
+      const ty = 60 + Math.random() * window.innerHeight;
+      el.style.setProperty("--cx", tx + "px");
+      el.style.setProperty("--cy", ty + "px");
+      el.style.animationDuration = (0.8 + Math.random() * 0.8) + "s";
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1800);
+    }, i * 30);
+  }
+}
+
+// ── CELEBRATE ─────────────────────────────────────────────────────────────
+const celebrateMsgs = [
+  { emoji:"🥳", title:"Lunchbox packed!", sub:"What an amazing lunch today!" },
+  { emoji:"🌈", title:"Perfect lunchbox!", sub:"So healthy and yummy!" },
+  { emoji:"⭐", title:"You're a star!", sub:"That looks totally delicious!" },
+  { emoji:"🎉", title:"Amazing choices!", sub:"Mum & Dad will love packing this!" },
+];
+function showCelebrate() {
+  const msg = celebrateMsgs[Math.floor(Math.random() * celebrateMsgs.length)];
+  document.getElementById("celebrateEmoji").textContent = msg.emoji;
+  document.getElementById("celebrateTitle").textContent = msg.title;
+  document.getElementById("celebrateSub").textContent   = msg.sub;
+  // Hide "Next day" button if already on Friday
+  const nextBtn = document.getElementById("celebrateNextBtn");
+  nextBtn.style.display = curDay === "fri" ? "none" : "block";
+  document.getElementById("celebrateOverlay").classList.add("show");
+  confettiShower();
+}
+function closeCelebrate() {
+  document.getElementById("celebrateOverlay").classList.remove("show");
+}
+function goNextDay() {
+  closeCelebrate();
+  const idx = DAYS.indexOf(curDay);
+  if (idx < DAYS.length - 1) selectDay(DAYS[idx + 1]);
+}
+
+// ── SHOPPING LIST ─────────────────────────────────────────────────────────
+function buildTally() {
+  const grouped = {main:{}, veggie:{}, fruit:{}, protein:{}, treat:{}};
+
+  function add(bucket, ing) {
+    const key = ing.name.toLowerCase().replace(/[^a-z0-9]/g,"_");
+    if (bucket[key]) bucket[key].qty += ing.qty;
+    else bucket[key] = {...ing};
+  }
+
+  DAYS.forEach(d => {
+    const {main, veggie, fruit, protein, treat} = meals[d];
+    if (main) {
+      // For merged items (e.g. "Cheese Sandwich"), look up by name directly
+      const fd = FOOD_MAP[main.name] || main; // merged items carry their own ingredients
+      (fd.ingredients || []).forEach(ing => add(grouped.main, ing));
+    }
+    if (protein) FOOD_MAP[protein.name]?.ingredients.forEach(ing => add(grouped.protein, ing));
+    if (veggie)  FOOD_MAP[veggie.name]?.ingredients.forEach(ing  => add(grouped.veggie,  ing));
+    if (fruit)   FOOD_MAP[fruit.name]?.ingredients.forEach(ing   => add(grouped.fruit,   ing));
+    if (treat)   FOOD_MAP[treat.name]?.ingredients.forEach(ing   => add(grouped.treat,   ing));
+  });
+  return { grouped };
+}
+
+function fmtQ(qty, unit) { return unit ? `${qty} ${unit}` : `×\u202F${qty}`; }
+
+function openShop() {
+  const { grouped } = buildTally();
+  const body = document.getElementById("shopBody"); body.innerHTML = "";
+  const secOrder  = ["main","veggie","fruit","protein","treat"];
+  const secLabels = {main:"Main Meal",veggie:"Veggies",fruit:"Fruit",protein:"Protein Snacks",treat:"Treats"};
+  let hasAny = false;
+
+  // Plain text for clipboard — no emojis
+  const copyLines = ["LUNCHBOX SHOPPING LIST", ""];
+
+  secOrder.forEach(sec => {
+    const items = Object.values(grouped[sec]);
+    if (!items.length) return;
+    hasAny = true;
+
+    // Visual display
+    const hdr = document.createElement("div"); hdr.className = "shop-sec-title";
+    const pill = document.createElement("div"); pill.className = "shop-sec-pill";
+    pill.style.background = SEC_COLORS[sec];
+    pill.textContent = `${SEC_META[sec].icon} ${secLabels[sec]}`;
+    hdr.appendChild(pill); body.appendChild(hdr);
+
+    // Plain text section heading
+    copyLines.push(secLabels[sec].toUpperCase());
+
+    const wrap = document.createElement("div"); wrap.className = "shop-items";
+    items.sort((a,b) => a.name.localeCompare(b.name)).forEach(ing => {
+      const row = document.createElement("div"); row.className = "shop-item";
+      const lbl = fmtQ(ing.qty, ing.unit);
+      row.innerHTML = `<span class="si-emoji">${ing.emoji}</span><span class="si-name">${ing.name}</span><span class="si-qty" style="background:${SEC_COLORS[sec]}">${lbl}</span>`;
+      wrap.appendChild(row);
+      // Plain text item — just name and quantity, no emoji
+      copyLines.push(`- ${ing.name}  ${lbl}`);
+    });
+    body.appendChild(wrap);
+    copyLines.push(""); // blank line between sections
+  });
+
+  if (!hasAny) {
+    body.innerHTML = `<div class="shop-empty">🤔 Your lunchboxes are empty!<br>Go pick some yummy foods first.</div>`;
+    window._shopCopyText = "";
+  } else {
+    window._shopCopyText = copyLines.join("\n").trimEnd();
+  }
+  document.getElementById("shopOverlay").classList.add("open");
+}
+function closeShop() { document.getElementById("shopOverlay").classList.remove("open"); }
+function handleShopBg(e) { if (e.target===document.getElementById("shopOverlay")) closeShop(); }
+function copyList() {
+  const text = window._shopCopyText;
+  if (!text) return;
+  const show = () => { const t=document.getElementById("toast"); t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2400); };
+  navigator.clipboard?.writeText(text).then(show).catch(() => {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select(); document.execCommand("copy");
+    document.body.removeChild(ta); show();
+  });
+}
+
+// ── MENU VIEW ─────────────────────────────────────────────────────────────
+const SEC_LABELS_MENU = {main:"Main",veggie:"Veggie",fruit:"Fruit",protein:"Protein",treat:"Treat"};
+
+function openMenu() {
+  const body = document.getElementById("menuBody"); body.innerHTML = "";
+  let hasAny = false;
+  const copyLines = ["THIS WEEK'S LUNCHBOX MENU", ""];
+
+  DAYS.forEach(d => {
+    const dayMeals = meals[d];
+    const filled = ALL_SECS.filter(s => dayMeals[s]);
+
+    // Visual day header
+    const hdr = document.createElement("div");
+    hdr.className = "menu-day-header";
+    hdr.style.background = DAY_COLORS[d];
+    hdr.textContent = DAY_NAMES[d];
+    body.appendChild(hdr);
+
+    copyLines.push(DAY_NAMES[d].toUpperCase());
+
+    if (!filled.length) {
+      const empty = document.createElement("div");
+      empty.className = "menu-day-empty";
+      empty.textContent = "Nothing planned yet";
+      body.appendChild(empty);
+      copyLines.push("  (nothing planned)");
+    } else {
+      hasAny = true;
+      const wrap = document.createElement("div");
+      wrap.className = "shop-items";
+      wrap.style.marginBottom = "4px";
+
+      ALL_SECS.forEach(sec => {
+        const food = dayMeals[sec];
+        if (!food) return;
+        const row = document.createElement("div");
+        row.className = "shop-item";
+        row.innerHTML = `
+          <span class="si-emoji">${food.emoji}</span>
+          <span class="si-name">${food.name}</span>
+          <span class="si-qty" style="background:${SEC_COLORS[sec]}">${SEC_LABELS_MENU[sec]}</span>`;
+        wrap.appendChild(row);
+        copyLines.push(`  ${SEC_LABELS_MENU[sec]}: ${food.name}`);
+      });
+      body.appendChild(wrap);
+    }
+    copyLines.push("");
+  });
+
+  window._menuCopyText = copyLines.join("\n").trimEnd();
+  document.getElementById("menuOverlay").classList.add("open");
+}
+
+function closeMenu() { document.getElementById("menuOverlay").classList.remove("open"); }
+function handleMenuBg(e) { if (e.target === document.getElementById("menuOverlay")) closeMenu(); }
+function copyMenu() {
+  const text = window._menuCopyText;
+  if (!text) return;
+  const show = () => { const t=document.getElementById("toast"); t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2400); };
+  navigator.clipboard?.writeText(text).then(show).catch(() => {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.cssText = "position:fixed;opacity:0";
+    document.body.appendChild(ta); ta.select(); document.execCommand("copy");
+    document.body.removeChild(ta); show();
+  });
+}
+
+// ── DISABLED FOODS ────────────────────────────────────────────────────────
+let disabledFoods = new Set(JSON.parse(localStorage.getItem("disabledFoods") || "[]"));
+
+function saveDisabled() {
+  localStorage.setItem("disabledFoods", JSON.stringify([...disabledFoods]));
+}
+
+function isEnabled(name) { return !disabledFoods.has(name); }
+
+function toggleFood(name) {
+  if (disabledFoods.has(name)) disabledFoods.delete(name);
+  else disabledFoods.add(name);
+  saveDisabled();
+  document.querySelectorAll('.manage-food-btn').forEach(btn => {
+    if (btn.dataset.name === name) btn.classList.toggle('disabled', !isEnabled(name));
+  });
+}
+
+function resetDisabled() {
+  disabledFoods.clear();
+  saveDisabled();
+  document.querySelectorAll('.manage-food-btn').forEach(btn => btn.classList.remove('disabled'));
+}
+
+function openManage() {
+  const body = document.getElementById('manageBody');
+  body.innerHTML = '';
+  const secOrder  = ['main','veggie','fruit','protein','treat'];
+  const secLabels = {main:'Main Meal', veggie:'Veggies', fruit:'Fruit', protein:'Protein', treat:'Treats'};
+  secOrder.forEach(sec => {
+    const hdr = document.createElement('div'); hdr.className = 'shop-sec-title';
+    const pill = document.createElement('div'); pill.className = 'shop-sec-pill';
+    pill.style.background = SEC_COLORS[sec];
+    pill.textContent = `${SEC_META[sec].icon} ${secLabels[sec]}`;
+    hdr.appendChild(pill); body.appendChild(hdr);
+    const grid = document.createElement('div'); grid.className = 'manage-grid';
+    FOODS[sec].items.forEach(food => {
+      const btn = document.createElement('button');
+      btn.className = 'manage-food-btn' + (isEnabled(food.name) ? '' : ' disabled');
+      btn.dataset.name = food.name;
+      btn.innerHTML = `<span class="mf-emoji">${food.emoji}</span>${food.name}`;
+      btn.onclick = () => toggleFood(food.name);
+      grid.appendChild(btn);
+    });
+    body.appendChild(grid);
+  });
+  document.getElementById('manageOverlay').classList.add('open');
+}
+function closeManage() { document.getElementById('manageOverlay').classList.remove('open'); }
+function handleManageBg(e) { if (e.target === document.getElementById('manageOverlay')) closeManage(); }
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+applyDayColor("mon");
+refreshBox();
+
+// Set days-col height to match lunchbox top → week-strip bottom on desktop
+function sizeDaysCol() {
+  if (window.innerWidth <= 600) return; // mobile handles itself
+  const lb = document.querySelector('.lunchbox-wrap');
+  const ws = document.querySelector('.week-strip');
+  const dc = document.querySelector('.days-col');
+  if (!lb || !ws || !dc) return;
+  const lbR = lb.getBoundingClientRect();
+  const wsR = ws.getBoundingClientRect();
+  dc.style.height = Math.round(wsR.bottom - lbR.top) + 'px';
+}
+window.addEventListener('load', sizeDaysCol);
+window.addEventListener('resize', sizeDaysCol);
+setTimeout(sizeDaysCol, 100);
+</script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>My Lunchbox Planner 🍱</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;700;800;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sky: #F5EFE0;
+  --grass: #5DC8BE;
+  --ink: #1A1A2E;
+  --muted: #6B7280;
+  --coral: #F27B6E;
+  --mon-c: #F27B6E; --tue-c: #F9C0BB; --wed-c: #A8E6DF;
+  --thu-c: #5DC8BE; --fri-c: #F5C842;
+  --day-color: #F27B6E;
+  --r-xl: 28px;
+  --shadow-card: 0 4px 20px rgba(0,0,0,0.08);
+  --shadow-pop:  0 12px 40px rgba(0,0,0,0.18);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--sky);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 40% at 10% 0%, #FFF3CC44 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 90% 100%, #C8EEE844 0%, transparent 60%);
+  pointer-events: none;
+}
+.bg-doodles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.bg-doodle {
+  position: absolute; font-size: 2rem; opacity: 0.07;
+  animation: float-doodle linear infinite;
+}
+@keyframes float-doodle {
+  0%   { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10%  { opacity: 0.07; } 90% { opacity: 0.07; }
+  100% { transform: translateY(-120px) rotate(360deg); opacity: 0; }
+}
+
+/* ── LAYOUT ─────────────────────────────────────────── */
+.app { position: relative; z-index: 1; max-width: 1040px; margin: 0 auto; padding: 20px 16px 20px; }
+
+/* ── TOP BAR (merged header + mascot) ──────────────── */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--coral);
+  border-radius: var(--r-xl);
+  padding: 14px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(255,107,107,0.4);
+  flex-shrink: 0;
+}
+
+/* Left side: logo pill */
+.top-bar-logo {
+  display: flex; align-items: center; gap: 12px;
+}
+.logo-monster {
+  width: 52px; height: 52px; background: var(--coral);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; box-shadow: 0 4px 12px rgba(255,107,107,0.4);
+  flex-shrink: 0;
+}
+@keyframes bob {
+  0%,100% { transform: translateY(0) rotate(-3deg); }
+  50%      { transform: translateY(-6px) rotate(3deg); }
+}
+.logo-text h1 { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.5rem; font-weight: 900; color: white; line-height: 1; }
+.logo-text p  { font-size: 0.78rem; font-weight: 700; color: rgba(255,255,255,0.8); }
+
+/* Right side: mascot */
+.top-bar-mascot {
+  display: flex; align-items: center; gap: 14px;
+  flex-shrink: 0;
+}
+.mascot-big {
+  flex-shrink: 0; width: 72px; height: 72px;
+  background: linear-gradient(135deg, var(--coral), #FF9F43);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 2.4rem; box-shadow: 0 6px 18px rgba(255,107,107,0.35);
+  animation: bob 2.4s ease-in-out infinite;
+}
+.mascot-speech { z-index: 1; width: 220px; }
+.mascot-day-label { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.2rem; font-weight: 800; color: white; line-height: 1.1; }
+.mascot-msg { font-size: 0.85rem; font-weight: 700; color: rgba(255,255,255,0.85); margin-top: 2px; min-height: 2.4em; transition: all 0.3s; }
+.mascot-progress { display: flex; gap: 7px; margin-top: 8px; align-items: center; }
+.prog-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  background: rgba(255,255,255,0.35); border: 2px solid rgba(255,255,255,0.5);
+  transition: background 0.3s, transform 0.3s, border-color 0.3s;
+}
+.prog-dot.filled { background: #FFD93D; border-color: #FFD93D; transform: scale(1.3); }
+
+/* ── CONTENT AREA ───────────────────────────────────── */
+.content-area {
+  display: grid;
+  grid-template-columns: 108px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+/* ── DAY COLUMN ─────────────────────────────────────── */
+.days-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0;
+  padding-top: 20px;
+  padding-bottom: 16px;
+  overflow: hidden;
+  /* height set by JS to match lunchbox top → week-strip bottom */
+}
+
+.day-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.day-btn {
+  width: 100%;
+  border: none; border-radius: 18px; padding: 0;
+  cursor: pointer;
+  transition: opacity 0.2s, filter 0.2s;
+  outline: none;
+  opacity: 0.55;
+  filter: saturate(0.5);
+}
+.day-btn:hover  { opacity: 0.8; filter: saturate(0.8); }
+.day-btn.active { opacity: 1; filter: saturate(1); }
+
+.day-btn-inner {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 10px 8px;
+  border-radius: 18px;
+  height: 75px;
+}
+.day-btn[data-day="mon"] .day-btn-inner { background: var(--mon-c); box-shadow: 0 5px 14px rgba(242,123,110,.4); }
+.day-btn[data-day="tue"] .day-btn-inner { background: var(--tue-c); box-shadow: 0 5px 14px rgba(249,192,187,.4); }
+.day-btn[data-day="wed"] .day-btn-inner { background: var(--wed-c); box-shadow: 0 5px 14px rgba(168,230,223,.4); }
+.day-btn[data-day="thu"] .day-btn-inner { background: var(--thu-c); box-shadow: 0 5px 14px rgba(93,200,190,.4); }
+.day-btn[data-day="fri"] .day-btn-inner { background: var(--fri-c); box-shadow: 0 5px 14px rgba(245,200,66,.4); }
+
+.day-name {
+  font-family: 'Baloo 2', system-ui, sans-serif; font-size: 0.83rem; font-weight: 800;
+  color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.2); line-height: 1.1;
+}
+
+/* Dots sit inside the button, below the label */
+.day-dots-row {
+  display: flex; gap: 5px; margin-top: 6px; justify-content: center; flex-wrap: wrap;
+}
+.day-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(0,0,0,0.25);
+  transition: background 0.25s, transform 0.25s, box-shadow 0.25s;
+}
+.day-dot.on {
+  background: #FFD93D;
+  transform: scale(1.3);
+  box-shadow: 0 0 6px rgba(255,217,61,0.85);
+}
+
+/* ── RIGHT COLUMN ───────────────────────────────────── */
+.right-col { display: flex; flex-direction: column; gap: 18px; }
+
+/* ── LUNCHBOX WRAPPER — contains lid + box stacked ── */
+.lunchbox-wrap {
+  background: white; border-radius: var(--r-xl);
+  padding: 20px; box-shadow: var(--shadow-card);
+  /* needs overflow visible so lid can flip up */
+  overflow: visible;
+  position: relative;
+}
+
+/* Box scene: positioning context */
+.box-scene {
+  margin: 0 auto;
+  position: relative;
+}
+
+/* The box body */
+.box-body {
+  background: #C8EEE8;
+  border-radius: 16px;
+  padding: 10px;
+  box-shadow:
+    inset 0 2px 6px rgba(255,255,255,0.5),
+    inset 0 -3px 8px rgba(0,0,0,0.08),
+    0 6px 20px rgba(93,200,190,0.25);
+  border: 2.5px solid #A8D8D2;
+  position: relative;
+}
+
+/* ── LUNCHBOX INTERIOR GRID ─────────────────────────── */
+.lunchbox-inner {
+  background: #EFF9F7;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  grid-template-rows: 1fr 1fr 0.85fr;
+  gap: 7px;
+  padding: 8px;
+  height: 380px;
+  overflow: hidden;
+}
+
+.cell {
+  border-radius: 10px; background: white;
+  border: 2px dashed #A8E6DF;
+  display: flex; flex-direction: row;
+  align-items: center; justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  position: relative;
+  overflow: hidden;
+  padding: 8px 10px;
+  user-select: none;
+}
+.cell:hover {
+  border-style: solid; border-color: var(--day-color, var(--coral));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--day-color, var(--coral)) 15%, transparent),
+              0 4px 14px rgba(0,0,0,0.08);
+  background: #FFFAF8;
+}
+.cell:active { background: #FEF0EE; }
+.cell.filled {
+  border-style: solid;
+  border-color: var(--day-color, var(--coral));
+  background: #FEF0EE;
+}
+.cell-label {
+  position: absolute; top: 8px; left: 0; right: 0;
+  text-align: center;
+  font-size: 0.58rem; font-weight: 900; letter-spacing: 0.5px;
+  text-transform: uppercase; color: #AAA;
+  pointer-events: none;
+  line-height: 1.2;
+}
+.cell.filled .cell-label { color: var(--day-color, var(--coral)); }
+
+/* Row cells: reserve space at top for label */
+.cell-row {
+  padding-top: 22px;
+  padding-bottom: 8px;
+}
+.cell-emoji {
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem); line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1), filter 0.2s;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+.cell:hover .cell-emoji { transform: scale(1.15) rotate(-8deg); filter: drop-shadow(0 3px 6px rgba(0,0,0,0.18)); }
+.cell-food-name {
+  font-size: 0.7rem; font-weight: 800; color: #777;
+  text-align: left; line-height: 1.2; pointer-events: none;
+  word-break: break-word;
+}
+.cell.filled .cell-food-name { color: #444; }
+.cell-plus {
+  font-size: 1.6rem; color: #CCC;
+  transition: color 0.2s, transform 0.25s; line-height: 1;
+  pointer-events: none;
+}
+.cell:hover .cell-plus { color: var(--day-color, var(--coral)); transform: rotate(90deg) scale(1.2); }
+
+/* Main meal cell is tall enough for stacked layout — keep it centered vertically */
+.cell-main {
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 10px 10px;
+}
+.cell-main .cell-emoji { font-size: clamp(2.2rem, 4.5vw, 3rem); }
+.cell-main .cell-food-name { text-align: center; }
+.cell-main .cell-label {
+  top: 8px; bottom: auto;
+  left: 50%; transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* Grid placement */
+.cell-main    { grid-column: 1; grid-row: 1 / 3; }
+.cell-veggie  { grid-column: 2; grid-row: 1; }
+.cell-fruit   { grid-column: 2; grid-row: 2; }
+.cell-protein { grid-column: 1; grid-row: 3; }
+.cell-treat   { grid-column: 2; grid-row: 3; }
+
+/* Side-by-side layout for small cells */
+.cell-row {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  overflow: hidden; /* hard stop — nothing escapes the cell */
+}
+.cell-row .cell-emoji {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  flex-shrink: 0;
+}
+.cell-row .cell-plus {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.cell-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-width: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.cell-text .cell-food-name {
+  font-size: 0.68rem;
+  text-align: left;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+/* pop-in on confirm */
+@keyframes pop-in {
+  0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+  60%  { transform: scale(1.25) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.cell-emoji.pop { animation: pop-in 0.4s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+/* Confetti */
+.confetti-piece {
+  position: fixed; width: 8px; height: 8px; border-radius: 2px;
+  pointer-events: none; animation: confetti-fall 0.8s ease-out forwards; z-index: 9999;
+}
+@keyframes confetti-fall {
+  0%   { transform: translate(0,0) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translate(var(--cx), var(--cy)) rotate(540deg) scale(0); opacity: 0; }
+}
+
+/* ── LID-CLOSE CELEBRATION ──────────────────────────── */
+/* Big celebration overlay when lunchbox is full */
+.celebrate-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none;
+  opacity: 0; transition: opacity 0.4s;
+}
+.celebrate-overlay.show { opacity: 1; }
+.celebrate-msg {
+  background: white; border-radius: 28px;
+  padding: 28px 40px; text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  transform: scale(0.8); transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none;
+}
+.celebrate-overlay.show .celebrate-msg { transform: scale(1); pointer-events: all; }
+.celebrate-emoji { font-size: 3.5rem; line-height: 1; display: block; margin-bottom: 8px; }
+.celebrate-title { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.6rem; font-weight: 900; color: var(--ink); }
+.celebrate-sub   { font-size: 0.9rem; font-weight: 700; color: var(--muted); margin-top: 4px; }
+.celebrate-close {
+  border: none; border-radius: 14px;
+  padding: 12px 24px; background: #F3F4F6;
+  color: #636e72; font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.05rem; font-weight: 800;
+  cursor: pointer; transition: transform 0.15s;
+}
+.celebrate-close:hover { transform: scale(1.05); }
+.celebrate-btns {
+  display: flex; gap: 10px; margin-top: 18px; justify-content: center;
+}
+.celebrate-next {
+  border: none; border-radius: 14px;
+  padding: 12px 24px; background: var(--day-color, var(--coral));
+  color: white; font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.05rem; font-weight: 800;
+  cursor: pointer; transition: transform 0.15s;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+}
+.celebrate-next:hover { transform: scale(1.05); }
+
+/* ── WEEK STRIP ─────────────────────────────────────── */
+.week-strip { background: white; border-radius: var(--r-xl); padding: 16px 20px; box-shadow: var(--shadow-card); }
+.week-strip-title { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 0.95rem; font-weight: 800; color: var(--ink); margin-bottom: 10px; }
+.strip-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.strip-day { text-align: center; }
+.strip-name { font-size: 0.65rem; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: #BBB; margin-bottom: 4px; }
+.strip-foods { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; min-height: 32px; font-size: 1.2rem; line-height: 1.3; }
+.strip-empty { color: #DDD; font-size: 1rem; }
+
+/* ── BOTTOM BUTTONS ─────────────────────────────────── */
+.bottom-btns {
+  display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap;
+}
+.shop-trigger, .menu-trigger, .manage-trigger {
+  border: none; border-radius: 18px;
+  padding: 14px 16px; font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1rem; font-weight: 800;
+  cursor: pointer; flex: 1;
+  transition: all 0.2s; position: relative; overflow: hidden;
+}
+.shop-trigger {
+  background: #F5C842;
+  color: #7a6000; box-shadow: 0 8px 24px rgba(245,200,66,0.4);
+  margin-top: 0;
+}
+.shop-trigger:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(245,200,66,0.5); }
+.menu-trigger {
+  background: #5DC8BE;
+  color: white; box-shadow: 0 8px 24px rgba(93,200,190,0.35);
+}
+.menu-trigger:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(93,200,190,0.5); }
+.manage-trigger {
+  background: #F9C0BB;
+  color: #8a3030; box-shadow: 0 8px 24px rgba(249,192,187,0.4);
+}
+.manage-trigger:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(249,192,187,0.5); }
+
+/* ── MANAGE FOODS ────────────────────────────────────── */
+.manage-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+.manage-food-btn {
+  display: flex; align-items: center; gap: 6px;
+  border: 2px solid #E5E7EB; border-radius: 999px;
+  padding: 6px 14px; background: white;
+  font-family: 'Nunito', system-ui, sans-serif; font-size: 0.85rem; font-weight: 800;
+  cursor: pointer; transition: all 0.15s; color: #333;
+}
+.manage-food-btn:hover { border-color: #aaa; }
+.manage-food-btn.disabled {
+  background: #F3F4F6; color: #BBB;
+  border-color: #E5E7EB; text-decoration: line-through;
+}
+.manage-food-btn .mf-emoji { font-size: 1.1rem; }
+
+/* ── OVERLAY ────────────────────────────────────────── */
+.overlay {
+  position: fixed; inset: 0; background: rgba(26,26,46,0.6);
+  backdrop-filter: blur(6px); z-index: 100;
+  display: flex; align-items: center; justify-content: center; padding: 16px;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.overlay.open { opacity: 1; pointer-events: all; }
+
+/* ── PICKER MODAL ───────────────────────────────────── */
+.picker-modal {
+  background: white; border-radius: 28px; padding: 0;
+  max-width: 520px; width: 100%; box-shadow: var(--shadow-pop);
+  transform: scale(0.88) translateY(30px); transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+  max-height: 88vh; overflow: hidden; display: flex; flex-direction: column;
+}
+.overlay.open .picker-modal { transform: scale(1) translateY(0); }
+.picker-header {
+  padding: 22px 22px 14px; border-bottom: 1.5px solid #F0F0F0;
+  display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+}
+.picker-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; flex-shrink: 0; }
+.picker-titles h2 { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--ink); }
+.picker-titles p  { font-size: 0.82rem; font-weight: 700; color: var(--muted); }
+.picker-scroll { overflow-y: auto; padding: 16px; flex: 1; }
+.food-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.food-card {
+  border-radius: 16px; background: #FAFAFA; border: 2px solid #EDEDED;
+  padding: 14px 6px 10px; text-align: center; cursor: pointer;
+  transition: all 0.18s cubic-bezier(.34,1.56,.64,1); position: relative; overflow: hidden;
+}
+.food-card:hover { border-color: var(--day-color, var(--coral)); background: white; transform: scale(1.08) translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); z-index: 2; }
+.food-card.selected { border-color: var(--day-color, var(--coral)); background: white; box-shadow: 0 0 0 3px color-mix(in srgb, var(--day-color, var(--coral)) 20%, transparent); }
+.food-card.selected::after { content: '✓'; position: absolute; top: 5px; right: 7px; font-size: 0.7rem; font-weight: 900; color: var(--day-color, var(--coral)); }
+.fc-emoji { font-size: 2.2rem; line-height: 1.2; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+.fc-name  { font-size: 0.67rem; font-weight: 800; color: #888; margin-top: 5px; line-height: 1.2; }
+.picker-footer {
+  padding: 14px 22px 20px; border-top: 1.5px solid #F0F0F0;
+  display: flex; gap: 10px; flex-shrink: 0;
+}
+.pf-btn { border: none; border-radius: 14px; padding: 13px 0; font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: all 0.15s; flex: 1; }
+.pf-btn:hover { transform: translateY(-2px); }
+.pf-cancel { background: #F3F4F6; color: #888; }
+.pf-clear  { background: #FEE2E2; color: #DC2626; }
+.pf-back   { background: #EFF9F7; color: #2a7a74; }
+
+/* ── SHOP MODAL ─────────────────────────────────────── */
+.shop-modal {
+  background: white; border-radius: 28px; max-width: 520px; width: 100%;
+  box-shadow: var(--shadow-pop); transform: scale(0.88) translateY(30px);
+  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+  max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;
+}
+.overlay.open .shop-modal { transform: scale(1) translateY(0); }
+.shop-header { padding: 24px 24px 16px; background: #F5C842; border-radius: 28px 28px 0 0; color: #7a6000; }
+.shop-header h2 { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.6rem; font-weight: 900; }
+.shop-header p  { font-size: 0.88rem; font-weight: 700; opacity: 0.75; }
+.shop-body { overflow-y: auto; padding: 20px; flex: 1; }
+.shop-sec-title { display: flex; align-items: center; gap: 8px; margin: 14px 0 8px; }
+.shop-sec-pill { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 0.82rem; font-weight: 800; color: white; border-radius: 999px; padding: 3px 12px; }
+.shop-items { display: flex; flex-direction: column; gap: 6px; }
+.shop-item { display: flex; align-items: center; gap: 10px; background: #F9FAFB; border-radius: 12px; padding: 10px 14px; border: 1.5px solid #F0F0F0; }
+.si-emoji { font-size: 1.5rem; flex-shrink: 0; }
+.si-name  { flex: 1; font-size: 0.92rem; font-weight: 700; color: var(--ink); }
+.si-qty   { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 0.95rem; font-weight: 800; color: white; border-radius: 999px; padding: 2px 10px; min-width: 44px; text-align: center; }
+.shop-fold-note { background: #FFFBEB; border: 1.5px solid #FCD34D; border-radius: 12px; padding: 10px 14px; font-size: 0.83rem; font-weight: 700; color: #92400E; margin-bottom: 4px; }
+
+/* Menu modal specific */
+.menu-day-header {
+  font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1rem; font-weight: 900;
+  color: white; border-radius: 10px; padding: 5px 14px;
+  margin: 14px 0 7px; display: inline-block;
+}
+.menu-day-empty {
+  font-size: 0.85rem; font-weight: 700; color: #CCC;
+  padding: 4px 0 10px; font-style: italic;
+}
+.shop-empty { text-align: center; padding: 32px; color: #CCC; font-size: 1rem; font-weight: 700; }
+.shop-textarea { display: block; width: 100%; margin-top: 16px; border: 2px solid #E5E7EB; border-radius: 14px; padding: 14px; font-family: 'Nunito', sans-serif; font-size: 0.85rem; line-height: 1.7; color: var(--ink); background: #FAFAFA; resize: none; outline: none; }
+.shop-textarea:focus { border-color: #5DC8BE; }
+.shop-footer { padding: 14px 20px 20px; border-top: 1.5px solid #F0F0F0; display: flex; gap: 10px; flex-shrink: 0; }
+.sf-btn { border: none; border-radius: 14px; padding: 13px 0; font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s; flex: 1; }
+.sf-btn:hover { transform: translateY(-2px); }
+.sf-close { background: #F3F4F6; color: #888; }
+.sf-copy  { background: #5DC8BE; color: white; flex: 2; box-shadow: 0 4px 14px rgba(93,200,190,0.35); }
+
+.coffee-link {
+  text-align: center;
+  margin-top: 24px;
+  padding-bottom: 12px;
+}
+.coffee-link a {
+  display: inline-block;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #9a7a00;
+  text-decoration: none;
+  background: transparent;
+  border: 2px solid #F5C842;
+  border-radius: 18px;
+  padding: 10px 22px;
+}
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: white; border-radius: 14px; padding: 12px 24px; font-weight: 800; font-size: 0.95rem; z-index: 9999; opacity: 0; pointer-events: none; transition: all 0.3s; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── RESPONSIVE ─────────────────────────────────────── */
+@media (max-width: 600px) {
+
+  /* Fill screen exactly — no scroll */
+  body { overflow: hidden; height: 100dvh; }
+
+  .app {
+    padding: max(env(safe-area-inset-top, 10px), 10px) 10px 10px;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 0;
+    overflow: hidden;
+  }
+
+  /* Top bar and bottom items fixed, content-area fills middle */
+  .bottom-btns { flex-shrink: 0; margin-top: 0; }
+
+  /* Top bar — compact, fixed size */
+  .top-bar {
+    padding: 8px 12px;
+    margin-bottom: 0;
+    border-radius: 14px;
     gap: 8px;
+    flex-shrink: 0;
+  }
+  .logo-text h1 { font-size: 1.2rem; }
+  .logo-text p  { display: none; }
+  .top-bar-logo { gap: 8px; }
+  .mascot-big { width: 38px; height: 38px; font-size: 1.3rem; }
+  .top-bar-mascot { gap: 8px; }
+  .mascot-day-label { font-size: 1rem; }
+  .mascot-speech { width: 140px; }
+  .mascot-msg { font-size: 0.68rem; margin-top: 1px; min-height: 1em; }
+  .mascot-progress { gap: 4px; margin-top: 4px; }
+  .prog-dot { width: 8px; height: 8px; }
+
+  /* Content area fills remaining space */
+  .content-area {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    flex: 1;
+    min-height: 0;
+    align-items: stretch;
+    justify-content: space-between;
+  }
+
+  .day-entry { flex: 1; flex-direction: column; align-items: stretch; }
+  .day-btn { width: 100%; }
+  .day-btn-inner {
+    padding: 6px 4px;
+    border-radius: 12px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    box-shadow: none;
+    max-height: 64px; /* prevents overflow while keeping buttons chunky */
+  }
+  .day-btn[data-day="mon"] .day-btn-inner { box-shadow: none; }
+  .day-btn[data-day="tue"] .day-btn-inner { box-shadow: none; }
+  .day-btn[data-day="wed"] .day-btn-inner { box-shadow: none; }
+  .day-btn[data-day="thu"] .day-btn-inner { box-shadow: none; }
+  .day-btn[data-day="fri"] .day-btn-inner { box-shadow: none; }
+  .day-btn:hover  { transform: scale(1.04); }
+  .day-btn.active { transform: scale(1.06); opacity: 1; filter: saturate(1); }
+  .day-name { font-size: 0.78rem; }
+  .day-dots-row { gap: 2px; margin-top: 4px; justify-content: center; }
+  .day-dot { width: 6px; height: 6px; }
+
+  /* Days col — centred between top bar and lunchbox */
+  .days-col {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2px;
+    gap: 4px;
+    flex-shrink: 0;
+    flex-grow: 0;
+    margin: 6px 0;
+  }
+
+  /* Right col: space elements evenly to fill full height */
+  .right-col {
+    min-width: 0; overflow: hidden;
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    flex: 1; min-height: 0;
+    gap: 0;
+    padding-bottom: 8px; /* bottom border */
   }
 
   /* Lunchbox — square using vw units */
