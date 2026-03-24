@@ -494,7 +494,7 @@ body::before {
 .pf-btn:hover { transform: translateY(-2px); }
 .pf-cancel { background: #F3F4F6; color: #888; }
 .pf-clear  { background: #FEE2E2; color: #DC2626; }
-.pf-back   { background: #EEF2FF; color: #4F46E5; }
+.pf-back   { background: #EFF9F7; color: #2a7a74; }
 
 /* ── SHOP MODAL ─────────────────────────────────────── */
 .shop-modal {
@@ -504,9 +504,9 @@ body::before {
   max-height: 90vh; overflow: hidden; display: flex; flex-direction: column;
 }
 .overlay.open .shop-modal { transform: scale(1) translateY(0); }
-.shop-header { padding: 24px 24px 16px; background: linear-gradient(135deg, #43E97B, #38F9D7); border-radius: 28px 28px 0 0; color: white; }
+.shop-header { padding: 24px 24px 16px; background: #F5C842; border-radius: 28px 28px 0 0; color: #7a6000; }
 .shop-header h2 { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1.6rem; font-weight: 900; }
-.shop-header p  { font-size: 0.88rem; font-weight: 700; opacity: 0.85; }
+.shop-header p  { font-size: 0.88rem; font-weight: 700; opacity: 0.75; }
 .shop-body { overflow-y: auto; padding: 20px; flex: 1; }
 .shop-sec-title { display: flex; align-items: center; gap: 8px; margin: 14px 0 8px; }
 .shop-sec-pill { font-family: 'Baloo 2', system-ui, sans-serif; font-size: 0.82rem; font-weight: 800; color: white; border-radius: 999px; padding: 3px 12px; }
@@ -529,12 +529,12 @@ body::before {
 }
 .shop-empty { text-align: center; padding: 32px; color: #CCC; font-size: 1rem; font-weight: 700; }
 .shop-textarea { display: block; width: 100%; margin-top: 16px; border: 2px solid #E5E7EB; border-radius: 14px; padding: 14px; font-family: 'Nunito', sans-serif; font-size: 0.85rem; line-height: 1.7; color: var(--ink); background: #FAFAFA; resize: none; outline: none; }
-.shop-textarea:focus { border-color: #43E97B; }
+.shop-textarea:focus { border-color: #5DC8BE; }
 .shop-footer { padding: 14px 20px 20px; border-top: 1.5px solid #F0F0F0; display: flex; gap: 10px; flex-shrink: 0; }
 .sf-btn { border: none; border-radius: 14px; padding: 13px 0; font-family: 'Baloo 2', system-ui, sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.15s; flex: 1; }
 .sf-btn:hover { transform: translateY(-2px); }
 .sf-close { background: #F3F4F6; color: #888; }
-.sf-copy  { background: linear-gradient(135deg, #43E97B, #38F9D7); color: white; flex: 2; box-shadow: 0 4px 14px rgba(67,233,123,0.35); }
+.sf-copy  { background: #5DC8BE; color: white; flex: 2; box-shadow: 0 4px 14px rgba(93,200,190,0.35); }
 
 .coffee-link {
   text-align: center;
@@ -552,12 +552,6 @@ body::before {
   border: 2px solid #F5C842;
   border-radius: 999px;
   padding: 10px 22px;
-  transition: transform 0.2s, background 0.2s, color 0.2s;
-}
-.coffee-link a:hover {
-  transform: translateY(-2px);
-  background: #F5C842;
-  color: #7a6000;
 }
 .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: white; border-radius: 14px; padding: 12px 24px; font-weight: 800; font-size: 0.95rem; z-index: 9999; opacity: 0; pointer-events: none; transition: all 0.3s; white-space: nowrap; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -919,14 +913,14 @@ body::before {
 <!-- MENU -->
 <div class="overlay" id="menuOverlay" onclick="handleMenuBg(event)">
   <div class="shop-modal">
-    <div class="shop-header" style="background: linear-gradient(135deg, #A29BFE, #6C5CE7);">
+    <div class="shop-header" style="background: #5DC8BE;">
       <h2>📋 This Week's Menu</h2>
       <p>Your lunches for the whole week!</p>
     </div>
     <div class="shop-body" id="menuBody"></div>
     <div class="shop-footer">
       <button class="sf-btn sf-close" onclick="closeMenu()">Close</button>
-      <button class="sf-btn sf-copy" style="background: linear-gradient(135deg, #A29BFE, #6C5CE7); box-shadow: 0 4px 14px rgba(108,92,231,0.35);" onclick="copyMenu()">📋 Copy to Clipboard</button>
+      <button class="sf-btn sf-copy" style="background: #5DC8BE; box-shadow: 0 4px 14px rgba(93,200,190,0.35);" onclick="copyMenu()">📋 Copy to Clipboard</button>
     </div>
   </div>
 </div>
@@ -934,7 +928,7 @@ body::before {
 <!-- MANAGE FOODS -->
 <div class="overlay" id="manageOverlay" onclick="handleManageBg(event)">
   <div class="shop-modal">
-    <div class="shop-header" style="background: linear-gradient(135deg, #636e72, #2d3436);">
+    <div class="shop-header" style="background: #F9C0BB; color: #8a3030;">
       <h2>⚙️ Manage Foods</h2>
       <p>Tap any food to hide or show it in the picker</p>
     </div>
@@ -997,7 +991,7 @@ const SEC_META = {
   protein: { label:"Protein Snack", sub:"Something to keep you strong! 💪",   icon:"🧀", bg:"#FFF9E5" },
   treat:   { label:"Treat",         sub:"Your special yummy reward! 🎉",      icon:"🍬", bg:"#F5E5FF" }
 };
-const SEC_COLORS = { main:"#FF6B6B", veggie:"#4CAF50", fruit:"#26C6DA", protein:"#FF9F43", treat:"#7C4DFF" };
+const SEC_COLORS = { main:"#F27B6E", veggie:"#5DC8BE", fruit:"#A8E6DF", protein:"#F9C0BB", treat:"#F5C842" };
 
 const FOODS = {
   main: { items:[  // 10 → not a perfect grid, but filling sub-picker handles sandwich/wrap
