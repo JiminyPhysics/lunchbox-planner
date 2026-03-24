@@ -162,14 +162,18 @@ body::before {
   color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.2); line-height: 1.1;
 }
 
-/* Dots sit inside the button, below the label */
+/* Dots sit inside the button — 3 on top row, 2 on bottom */
 .day-dots-row {
-  display: flex; gap: 5px; margin-top: 6px; justify-content: center; flex-wrap: wrap;
+  display: flex; flex-direction: column; gap: 3px; margin-top: 5px; align-items: center;
+}
+.day-dots-inner {
+  display: flex; gap: 4px; justify-content: center;
 }
 .day-dot {
-  width: 10px; height: 10px; border-radius: 50%;
+  width: 8px; height: 8px; border-radius: 50%;
   background: rgba(0,0,0,0.25);
   transition: background 0.25s, transform 0.25s, box-shadow 0.25s;
+  flex-shrink: 0;
 }
 .day-dot.on {
   background: #FFD93D;
@@ -615,6 +619,10 @@ body::before {
   .top-bar    { flex-shrink: 0; order: 1; }
   .days-col   { flex-shrink: 0; order: 2; margin: 0; padding: 0 2px; gap: 4px;
                 display: flex; flex-direction: row; justify-content: space-between; align-items: center; }
+  .days-col .day-entry { flex: 1; min-width: 0; }
+  .days-col .day-btn { width: 100%; }
+  .days-col .day-btn-inner { width: 100%; overflow: hidden; }
+  .days-col .day-name { font-size: 0.78rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
   .lunchbox-wrap { flex-shrink: 0; order: 3; }
   .week-strip { flex-shrink: 0; order: 4; }
   .bottom-btns { flex-shrink: 0; order: 5; margin-top: 0; }
@@ -709,10 +717,10 @@ body::before {
       <div class="day-entry">
         <button class="day-btn active" data-day="mon" onclick="selectDay('mon')">
           <div class="day-btn-inner">
-            <div class="day-name">Monday</div>
+            <div class="day-name">Mon</div>
             <div class="day-dots-row" id="ddots-mon">
-              <div class="day-dot"></div><div class="day-dot"></div>
-              <div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div>
+              <div class="day-dots-inner"><div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div></div>
+              <div class="day-dots-inner"><div class="day-dot"></div><div class="day-dot"></div></div>
             </div>
           </div>
         </button>
@@ -721,10 +729,10 @@ body::before {
       <div class="day-entry">
         <button class="day-btn" data-day="tue" onclick="selectDay('tue')">
           <div class="day-btn-inner">
-            <div class="day-name">Tuesday</div>
+            <div class="day-name">Tues</div>
             <div class="day-dots-row" id="ddots-tue">
-              <div class="day-dot"></div><div class="day-dot"></div>
-              <div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div>
+              <div class="day-dots-inner"><div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div></div>
+              <div class="day-dots-inner"><div class="day-dot"></div><div class="day-dot"></div></div>
             </div>
           </div>
         </button>
@@ -733,10 +741,10 @@ body::before {
       <div class="day-entry">
         <button class="day-btn" data-day="wed" onclick="selectDay('wed')">
           <div class="day-btn-inner">
-            <div class="day-name">Wednesday</div>
+            <div class="day-name">Weds</div>
             <div class="day-dots-row" id="ddots-wed">
-              <div class="day-dot"></div><div class="day-dot"></div>
-              <div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div>
+              <div class="day-dots-inner"><div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div></div>
+              <div class="day-dots-inner"><div class="day-dot"></div><div class="day-dot"></div></div>
             </div>
           </div>
         </button>
@@ -745,10 +753,10 @@ body::before {
       <div class="day-entry">
         <button class="day-btn" data-day="thu" onclick="selectDay('thu')">
           <div class="day-btn-inner">
-            <div class="day-name">Thursday</div>
+            <div class="day-name">Thurs</div>
             <div class="day-dots-row" id="ddots-thu">
-              <div class="day-dot"></div><div class="day-dot"></div>
-              <div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div>
+              <div class="day-dots-inner"><div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div></div>
+              <div class="day-dots-inner"><div class="day-dot"></div><div class="day-dot"></div></div>
             </div>
           </div>
         </button>
@@ -757,10 +765,10 @@ body::before {
       <div class="day-entry">
         <button class="day-btn" data-day="fri" onclick="selectDay('fri')">
           <div class="day-btn-inner">
-            <div class="day-name">Friday!</div>
+            <div class="day-name">Fri</div>
             <div class="day-dots-row" id="ddots-fri">
-              <div class="day-dot"></div><div class="day-dot"></div>
-              <div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div>
+              <div class="day-dots-inner"><div class="day-dot"></div><div class="day-dot"></div><div class="day-dot"></div></div>
+              <div class="day-dots-inner"><div class="day-dot"></div><div class="day-dot"></div></div>
             </div>
           </div>
         </button>
